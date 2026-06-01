@@ -1,0 +1,7 @@
+.git
+.gitignore
+.cursor
+README.md
+docker-compose.override.yml
+*.md
+!index.html

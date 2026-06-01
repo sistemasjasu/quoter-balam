@@ -1,0 +1,7 @@
+services:
+  quotes:
+    build: .
+    container_name: quotes-balamst
+    ports:
+      - "8080:80"
+    restart: unless-stopped

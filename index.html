@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote - BALAM Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       GLOBAL VARIABLES
+    ============================================================ */
+    :root {
+      --primary:    #7A5B3F;
+      --secondary:  #B59A7A;
+      --text:       #2E2A26;
+      --muted:      #8B8278;
+      --bg:         #F7F4EF;
+      --bg-soft:    #FDFCFA;
+      --border:     rgba(181, 154, 122, 0.35);
+      --border-subtle: rgba(181, 154, 122, 0.18);
+      --white:      #FFFFFF;
+      --discount:   #9A4A4A;
+
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'Inter', 'Segoe UI', system-ui, sans-serif;
+
+      --print-width:  216mm;
+      --print-height: 279mm;
+    }
+
+    /* ============================================================
+       RESET
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: #E5DFD6;
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.app-ready {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 64px;
+    }
+
+    /* ============================================================
+       LOGIN
+    ============================================================ */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #E5DFD6;
+      z-index: 9999;
+      padding: 24px;
+    }
+
+    #login-screen[hidden] {
+      display: none !important;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 36px 32px 32px;
+      box-shadow: 0 2px 24px rgba(46, 42, 38, 0.07);
+    }
+
+    .login-card h2 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .login-card .login-sub {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .login-field {
+      margin-bottom: 16px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: .68rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .login-field input {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      font-family: var(--font-body);
+      font-size: .88rem;
+      color: var(--text);
+      background: var(--bg-soft);
+      border-radius: 4px;
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      background: var(--white);
+    }
+
+    .login-error {
+      font-size: .75rem;
+      color: var(--discount);
+      margin-bottom: 14px;
+    }
+
+    .login-error[hidden] {
+      display: none;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 11px 20px;
+      border: none;
+      background: var(--primary);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background .18s;
+    }
+
+    .btn-login:hover {
+      background: #634A34;
+    }
+
+    #app-shell[hidden] {
+      display: none !important;
+    }
+
+    #app-shell {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ============================================================
+       TOOLBAR (not printed)
+    ============================================================ */
+    #toolbar {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #toolbar h1 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary);
+      flex: 1;
+    }
+    .btn {
+      padding: 8px 20px;
+      border: 1px solid var(--secondary);
+      background: var(--white);
+      color: var(--primary);
+      font-family: var(--font-body);
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s, color .18s, border-color .18s;
+      border-radius: 3px;
+    }
+    .btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover { background: #634A34; border-color: #634A34; }
+
+    /* ============================================================
+       EDITOR PANEL (not printed)
+    ============================================================ */
+    #editor-panel {
+      width: 100%;
+      max-width: 960px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      transition: max-height .35s ease;
+    }
+    #editor-panel.collapsed { max-height: 0; border: none; }
+    #editor-panel.expanded  { max-height: 3200px; }
+
+    .editor-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .editor-tab {
+      padding: 11px 22px;
+      font-size: .75rem;
+      font-weight: 500;
+      font-family: var(--font-body);
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .15s;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .editor-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--white);
+    }
+    .editor-section { display: none; padding: 22px 26px 26px; }
+    .editor-section.active { display: block; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-field label {
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .form-field input, .form-field textarea {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      font-family: var(--font-body);
+      font-size: .85rem;
+      color: var(--text);
+      border-radius: 3px;
+      background: var(--bg-soft);
+      outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .form-field input:focus, .form-field textarea:focus {
+      border-color: var(--secondary);
+      background: var(--white);
+    }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field textarea { resize: vertical; min-height: 64px; }
+
+    #logo-preview-editor {
+      width: 90px;
+      height: 56px;
+      object-fit: contain;
+      border: 1px dashed var(--border);
+      display: block;
+      margin-top: 8px;
+      background: var(--bg);
+    }
+
+    #items-editor { overflow-x: auto; }
+    #items-editor table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+    #items-editor th {
+      background: var(--bg);
+      padding: 8px 10px;
+      text-align: left;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    #items-editor td { padding: 6px 6px; }
+    #items-editor td input {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-family: var(--font-body);
+      font-size: .82rem;
+      color: var(--text);
+      background: var(--bg-soft);
+      border-radius: 3px;
+    }
+    #items-editor td input:focus { border-color: var(--secondary); background: var(--white); outline: none; }
+    .col-code    { width: 90px; }
+    .col-desc    { min-width: 180px; }
+    .col-price   { width: 90px; }
+    .col-qty     { width: 70px; }
+    .col-disc    { width: 70px; }
+    .col-sub     { width: 90px; }
+    .col-del     { width: 40px; text-align: center; }
+
+    .editor-sub-row td {
+      padding: 4px 6px 10px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .editor-sub-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      align-items: center;
+    }
+    .editor-sub-fields .sub-field {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .editor-sub-fields label {
+      font-size: .62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    .editor-sub-fields input,
+    .editor-sub-fields select {
+      width: 68px;
+      border: 1px solid var(--border);
+      padding: 4px 6px;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      color: var(--text);
+      background: var(--white);
+      border-radius: 3px;
+    }
+    .editor-sub-fields select { width: 72px; }
+    .editor-sub-fields .sub-readonly {
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--primary);
+      min-width: 28px;
+    }
+    .editor-sub-fields .sub-readonly.calc-pending {
+      color: var(--discount);
+      font-weight: 400;
+    }
+    .btn-del {
+      background: none;
+      border: none;
+      color: var(--discount);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+    .btn-del:hover { color: #7A3030; }
+
+    .discount-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .discount-row label { font-size: .78rem; color: var(--muted); }
+    .discount-row input {
+      width: 90px;
+      border: 1px solid var(--border);
+      padding: 6px 9px;
+      font-family: var(--font-body);
+      font-size: .85rem;
+      color: var(--text);
+      background: var(--bg-soft);
+      border-radius: 3px;
+    }
+    .discount-row input:focus { border-color: var(--secondary); outline: none; background: var(--white); }
+
+    .discount-row label.checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .discount-row label.checkbox-label input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       DOCUMENT (letter)
+    ============================================================ */
+    #quote-document {
+      width: var(--print-width);
+      min-height: var(--print-height);
+      background: var(--white);
+      padding: 18mm 20mm 16mm;
+      box-shadow: 0 2px 24px rgba(46, 42, 38, 0.07);
+      position: relative;
+      z-index: 0;
+    }
+
+    #quote-document > * { position: relative; z-index: 1; }
+
+    /* --- HEADER --- */
+    .doc-header {
+      margin-bottom: 10mm;
+      padding-bottom: 8mm;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .doc-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10mm;
+    }
+
+    .company-brand {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .company-brand h2 {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 500;
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .company-brand .company-tagline {
+      font-family: var(--font-body);
+      font-size: .68rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .doc-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    #doc-logo {
+      width: 168px;
+      max-width: 168px;
+      max-height: 96px;
+      height: auto;
+      object-fit: contain;
+      object-position: right center;
+      display: block;
+    }
+    #doc-logo.hidden { display: none; }
+
+    .logo-placeholder {
+      width: 168px;
+      height: 96px;
+      border: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: .65rem;
+    }
+    .logo-placeholder.hidden { display: none; }
+
+    .company-details {
+      font-size: .68rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .seller-contact {
+      font-family: var(--font-body);
+      font-size: .68rem;
+      line-height: 1.55;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* --- META BLOCKS --- */
+    .doc-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-bottom: 8mm;
+    }
+
+    .meta-block {
+      padding: 4mm 5mm 4mm 0;
+    }
+
+    .meta-block:last-child {
+      padding: 4mm 0 4mm 5mm;
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .meta-block h3 {
+      font-size: .62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .meta-block p {
+      font-size: .73rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .client-name {
+      display: block;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text);
+      margin-bottom: 5px;
+      max-width: 34ch;
+    }
+
+    .meta-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: .72rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .meta-line span:first-child {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .meta-line span:last-child {
+      text-align: right;
+    }
+
+    /* --- PRODUCT TABLE --- */
+    .doc-table-wrap { margin-bottom: 0; }
+
+    .doc-closing {
+      margin-top: 6mm;
+    }
+
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .doc-table thead th {
+      padding: 10px 4px 8px;
+      font-size: .6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+    }
+
+    .doc-table thead th.col-num { text-align: right; }
+
+    .doc-table tbody tr {
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .doc-table tbody td {
+      padding: 10px 4px;
+      font-size: .75rem;
+      color: var(--text);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    .doc-table thead th.col-code,
+    .doc-table thead th:first-child {
+      white-space: nowrap;
+    }
+
+    .doc-table tbody td.td-code {
+      font-size: .62rem;
+      color: var(--muted);
+      width: 88px;
+      min-width: 88px;
+      white-space: nowrap;
+      padding-top: 12px;
+    }
+
+    .doc-table tbody td.td-desc .desc-name {
+      display: block;
+      font-size: .78rem;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .doc-table tbody td.td-desc .desc-meta {
+      display: block;
+      font-size: .66rem;
+      color: var(--muted);
+    }
+
+    .doc-table tbody td.td-right {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      font-size: .74rem;
+    }
+
+    .doc-table tbody td.td-num-sm {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      font-size: .68rem;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+
+    .doc-table tbody td.td-num-sm.td-pending {
+      color: var(--discount);
+    }
+
+    .doc-table tbody td.td-disc {
+      text-align: right;
+      font-size: .72rem;
+      color: var(--discount);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty-row td {
+      text-align: center;
+      color: var(--muted);
+      font-size: .72rem;
+      padding: 28px 0;
+      font-style: italic;
+    }
+
+    /* --- TOTALS BLOCK --- */
+    .totals-block {
+      margin-left: auto;
+      width: 100%;
+      max-width: 250px;
+      margin-top: 0;
+      margin-bottom: 0;
+      page-break-inside: avoid;
+    }
+
+    .totals-block.is-hidden {
+      display: none;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 0;
+      gap: 16px;
+    }
+
+    .totals-row .tf-label {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .totals-row .tf-value {
+      font-size: .76rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .totals-row.tf-discount .tf-label,
+    .totals-row.tf-discount .tf-value {
+      color: var(--discount);
+    }
+
+    .totals-final {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--primary);
+      gap: 16px;
+    }
+
+    .totals-final .tf-label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .totals-final .tf-value {
+      font-family: var(--font-body);
+      font-size: .76rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--primary);
+      text-align: right;
+    }
+
+    /* --- NOTES --- */
+    .doc-notes {
+      padding-top: 4mm;
+      page-break-inside: avoid;
+    }
+
+    .doc-notes p {
+      font-size: .66rem;
+      line-height: 1.7;
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    /* ============================================================
+       PRINT
+    ============================================================ */
+    @media print {
+      @page {
+        size: letter portrait;
+        margin: 14mm 18mm;
+      }
+      body {
+        background: none;
+        padding: 0;
+        display: block;
+      }
+      #toolbar, #editor-panel { display: none !important; }
+      #login-screen { display: none !important; }
+      #quote-document {
+        box-shadow: none;
+        width: 100%;
+        min-height: auto;
+        padding: 0;
+        display: block;
+      }
+      .doc-header,
+      .doc-meta {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .doc-table thead {
+        display: table-header-group;
+      }
+      .doc-table tbody tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .doc-closing {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .totals-block,
+      .doc-notes {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h2>BALAM Studio</h2>
+    <p class="login-sub">Quote editor · Sign in to continue</p>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="login-field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" value="aandrade@balamst.com" autocomplete="username" required />
+      </div>
+      <div class="login-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" autocomplete="current-password" required />
+      </div>
+      <p class="login-error" id="login-error" hidden>Invalid email or password.</p>
+      <button type="submit" class="btn-login">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<div id="app-shell" hidden>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <h1>Quote Editor · BALAM Studio</h1>
+  <button class="btn" onclick="toggleEditor()">☰ Edit quote</button>
+  <button class="btn btn-primary" onclick="window.print()">⎙ Print / Export PDF</button>
+  <button class="btn" onclick="logout()">Sign out</button>
+</div>
+
+<!-- EDITOR PANEL -->
+<div id="editor-panel" class="collapsed">
+
+  <div class="editor-tabs">
+    <div class="editor-tab active" onclick="switchTab('tab-empresa')">Company</div>
+    <div class="editor-tab" onclick="switchTab('tab-cliente')">Client</div>
+    <div class="editor-tab" onclick="switchTab('tab-items')">Products</div>
+    <div class="editor-tab" onclick="switchTab('tab-notas')">Notes</div>
+  </div>
+
+  <!-- TAB COMPANY -->
+  <div id="tab-empresa" class="editor-section active">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Company name</label>
+        <input type="text" id="e-nombre" value="BALAM Studio LLC" oninput="syncField('company-name', this.value)" />
+      </div>
+      <div class="form-field">
+        <label>Tagline</label>
+        <input type="text" id="e-tagline" value="Premium Natural Stone" oninput="syncField('company-tagline', this.value)" />
+      </div>
+      <div class="form-field">
+        <label>Tax ID</label>
+        <input type="text" id="e-rfc" value="" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Phone</label>
+        <input type="text" id="e-tel" value="" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="text" id="e-email" value="sales@balamst.com" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Website</label>
+        <input type="text" id="e-web" value="balamst.com" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field full">
+        <label>Location (header display)</label>
+        <input type="text" id="e-loc" value="Ky Biscayne, FL" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Sales contact</label>
+        <input type="text" id="e-firma-nombre" value="Gonzalo Fernandez" oninput="rebuildSellerContact()" />
+      </div>
+      <div class="form-field">
+        <label>Contact title</label>
+        <input type="text" id="e-firma-title" value="Commercial Director" oninput="rebuildSellerContact()" />
+      </div>
+      <div class="form-field">
+        <label>Contact phone</label>
+        <input type="text" id="e-firma-tel" value="+1 (305) 555-0142" oninput="rebuildSellerContact()" />
+      </div>
+      <div class="form-field full">
+        <label>Address</label>
+        <input type="text" id="e-dir" value="50W, Mastha, Dr. Suite, Ky Biscayne, FL" oninput="rebuildCompanyInfo()" />
+      </div>
+      <div class="form-field full">
+        <label>Logo path (local file or URL)</label>
+        <input type="text" id="logo-path"
+               value="./logo.png"
+               placeholder="E.g.: C:/images/logo.png  or  ./logo.png  or  https://..."
+               oninput="updateLogo(this.value)" />
+        <img id="logo-preview-editor" src="./logo.png" alt="Logo" />
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB CLIENT -->
+  <div id="tab-cliente" class="editor-section">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Client company</label>
+        <input type="text" id="c-empresa" value="Alvarez & Partners Architects" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Contact</label>
+        <input type="text" id="c-contacto" value="Elena Alvarez, AIA" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="text" id="c-email" value="e.alvarez@alvarezarch.com" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Phone</label>
+        <input type="text" id="c-tel" value="+1 (561) 555-0193" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Location (header display)</label>
+        <input type="text" id="c-loc" value="Palm Beach, FL" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field full">
+        <label>Address</label>
+        <input type="text" id="c-dir" value="260 Worth Ave., Suite 200, Palm Beach, FL 33480" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field">
+        <label>Quote number</label>
+        <input type="text" id="c-num" value="QUO-2026-0001" oninput="updateQuoteRef()" />
+      </div>
+      <div class="form-field">
+        <label>Date</label>
+        <input type="date" id="c-fecha" oninput="syncField('quote-date', formatDate(this.value))" />
+      </div>
+      <div class="form-field">
+        <label>Valid (days)</label>
+        <input type="number" id="c-validez" value="30" min="1" oninput="rebuildClientInfo()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB ITEMS -->
+  <div id="tab-items" class="editor-section">
+    <div id="items-editor">
+      <table id="items-table">
+        <thead>
+          <tr>
+            <th class="col-code">Code</th>
+            <th class="col-desc">Description</th>
+            <th class="col-price">Unit price</th>
+            <th class="col-qty">Pcs</th>
+            <th class="col-disc">Disc. %</th>
+            <th class="col-sub">Subtotal</th>
+            <th class="col-del"></th>
+          </tr>
+        </thead>
+        <tbody id="items-tbody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <button class="btn" onclick="addItem()">+ Add item</button>
+      <div class="discount-row">
+        <label>Global discount (%)</label>
+        <input type="number" id="global-disc" value="0" min="0" max="100" step="0.1" oninput="recalcTotals()" />
+      </div>
+      <div class="discount-row">
+        <label>Shipping (USD)</label>
+        <input type="number" id="shipping-cost" value="0" min="0" step="0.01" oninput="recalcTotals()" />
+      </div>
+      <div class="discount-row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-totals" onchange="toggleTotalsVisibility()" />
+          Show totals summary
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB NOTES -->
+  <div id="tab-notas" class="editor-section">
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>Notes / Terms</label>
+        <textarea id="notas-text" rows="4" oninput="syncField('doc-notes-text', this.value)">• Lead time: 15-20 business days
+• Natural stone may vary in tone and veining</textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- PRINTABLE DOCUMENT -->
+<div id="quote-document">
+
+  <header class="doc-header">
+    <div class="doc-header-top">
+      <div class="company-brand">
+        <h2 id="company-name">BALAM Studio LLC</h2>
+        <p class="company-tagline" id="company-tagline">Premium Natural Stone</p>
+        <p class="company-details" id="company-details">sales@balamst.com · balamst.com<br>Ky Biscayne, FL</p>
+      </div>
+      <div class="doc-header-right">
+        <img id="doc-logo" src="./logo.png" alt="Company logo" />
+        <div id="logo-placeholder" class="logo-placeholder hidden">Logo</div>
+      </div>
+    </div>
+    <p class="seller-contact" id="seller-contact">Gonzalo Fernandez · Commercial Director<br>+1 (305) 555-0142</p>
+  </header>
+
+  <div class="doc-meta">
+    <div class="meta-block">
+      <h3>Bill To</h3>
+      <p id="client-info">
+        <span class="client-name">Alvarez & Partners Architects</span><br>
+        Elena Alvarez, AIA<br>
+        e.alvarez@alvarezarch.com · +1 (561) 555-0193<br>
+        Palm Beach, FL
+      </p>
+    </div>
+    <div class="meta-block">
+      <h3>Quote Details</h3>
+      <div id="quote-details">
+        <div class="meta-line"><span>Quote</span><span id="quote-number">QUO-2026-0001</span></div>
+        <div class="meta-line"><span>Date</span><span id="quote-date">-</span></div>
+        <div class="meta-line"><span>Validity</span><span id="meta-validity">30 days</span></div>
+        <div class="meta-line"><span>Currency</span><span>USD</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-table-wrap">
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th style="width:88px">Code</th>
+          <th>Description</th>
+          <th class="col-num" style="width:72px">Unit Price</th>
+          <th class="col-num" style="width:44px">SF</th>
+          <th class="col-num" style="width:36px">Pcs</th>
+          <th class="col-num" style="width:36px">Plt</th>
+          <th class="col-num" style="width:44px">Disc.</th>
+          <th class="col-num" style="width:80px">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="doc-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="doc-closing">
+    <div class="totals-block is-hidden" id="doc-tfoot">
+      <div class="totals-row">
+        <span class="tf-label">Subtotal</span>
+        <span class="tf-value" id="tf-subtotal">$ 0.00</span>
+      </div>
+      <div class="totals-row tf-discount" id="tf-line-disc-row" style="display:none">
+        <span class="tf-label">Discount</span>
+        <span class="tf-value" id="tf-line-discount">$ 0.00</span>
+      </div>
+      <div class="totals-row tf-discount" id="tf-global-disc-row" style="display:none">
+        <span class="tf-label" id="tf-global-disc-label">Discount</span>
+        <span class="tf-value" id="tf-global-discount">$ 0.00</span>
+      </div>
+      <div class="totals-row" id="tf-ship-row" style="display:none">
+        <span class="tf-label">Shipping</span>
+        <span class="tf-value" id="tf-shipping">$ 0.00</span>
+      </div>
+      <div class="totals-final tf-total">
+        <span class="tf-label">Total</span>
+        <span class="tf-value" id="tf-total">$ 0.00</span>
+      </div>
+    </div>
+
+    <div class="doc-notes">
+      <p id="doc-notes-text">• Lead time: 15-20 business days
+• Natural stone may vary in tone and veining</p>
+    </div>
+  </div>
+
+</div><!-- /app-shell -->
+
+
+<script>
+  const AUTH = {
+    email: 'aandrade@balamst.com',
+    passHash: '2cfc7b57d427f0edd40c018ced8f63e99828f4752f5425950852585d35f0d41c',
+  };
+  const SESSION_KEY = 'balam-quotes-auth';
+
+  async function hashText(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function isLoggedIn() {
+    return sessionStorage.getItem(SESSION_KEY) === '1';
+  }
+
+  function showApp() {
+    document.getElementById('login-screen').hidden = true;
+    document.getElementById('app-shell').hidden = false;
+    document.body.classList.add('app-ready');
+  }
+
+  function showLogin() {
+    document.getElementById('login-screen').hidden = false;
+    document.getElementById('app-shell').hidden = true;
+    document.body.classList.remove('app-ready');
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').hidden = true;
+  }
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-password').value;
+    const hash  = await hashText(pass);
+
+    if (email.toLowerCase() === AUTH.email.toLowerCase() && hash === AUTH.passHash) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      showApp();
+      initApp();
+      return;
+    }
+
+    document.getElementById('login-error').hidden = false;
+  }
+
+  function logout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    showLogin();
+  }
+
+  function initApp() {
+    if (window.__appInitialized) return;
+    window.__appInitialized = true;
+
+    const today = new Date();
+    document.getElementById('c-fecha').valueAsDate = today;
+    document.getElementById('quote-date').textContent = formatDate(today.toISOString().slice(0, 10));
+
+    rebuildCompanyInfo();
+    rebuildSellerContact();
+    rebuildClientInfo();
+    updateQuoteRef();
+    updateLogo(document.getElementById('logo-path').value);
+    renderEditorRows();
+    renderDocRows();
+    recalcTotals();
+    toggleTotalsVisibility();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (isLoggedIn()) {
+      showApp();
+      initApp();
+    }
+  });
+
+  const defaultItems = [
+    { code: 'TRV-IC-HN-48', desc: 'Travertine Ivory Cream Honed Cross Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',       price: 13.67, pieces: 267, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-IC-PL-36', desc: 'Travertine Ivory Cream Polished Cross Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.64, pieces: 473, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
+    { code: 'TRV-IC-LR-24', desc: 'Travertine Ivory Cream Leather Cross Cut, 24" x 48" x 3/4" · 0.7 SF/PC · SF/Pallet 400',  price: 12.49, pieces: 572, disc: 0, widthIn: 24, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-IC-PL-18', desc: 'Travertine Ivory Cream Polished Cross Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360', price: 11.94, pieces: 901, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
+    { code: 'TRV-XB-HN-48', desc: 'Travertine Xalapa Beige Honed Vein Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',    price: 13.79, pieces: 267, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-XB-PL-36', desc: 'Travertine Xalapa Beige Polished Vein Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.57, pieces: 473, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
+    { code: 'TRV-XB-LR-24', desc: 'Travertine Xalapa Beige Leather Vein Cut, 24" x 36" x 3/4" · 0.6 SF/PC · SF/Pallet 360', price: 11.85, pieces: 600, disc: 0, widthIn: 24, lengthIn: 36, sfPerPallet: 360 },
+    { code: 'TRV-XB-HN-18', desc: 'Travertine Xalapa Beige Honed Vein Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360',    price: 11.94, pieces: 901, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
+  ];
+
+  let items = defaultItems.map(normalizeItem);
+
+  function toggleTotalsVisibility() {
+    const show = document.getElementById('show-totals').checked;
+    document.getElementById('doc-tfoot').classList.toggle('is-hidden', !show);
+  }
+
+  function toggleEditor() {
+    const panel = document.getElementById('editor-panel');
+    panel.classList.toggle('collapsed');
+    panel.classList.toggle('expanded');
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    const idx = ['tab-empresa','tab-cliente','tab-items','tab-notas'].indexOf(tabId);
+    document.querySelectorAll('.editor-tab')[idx].classList.add('active');
+  }
+
+  function updateLogo(path) {
+    const docLogo  = document.getElementById('doc-logo');
+    const editPrev = document.getElementById('logo-preview-editor');
+    const placeholder = document.getElementById('logo-placeholder');
+
+    if (!path || path.trim() === '') {
+      docLogo.classList.add('hidden');
+      editPrev.src = '';
+      placeholder.classList.remove('hidden');
+      return;
+    }
+
+    docLogo.src    = path.trim();
+    editPrev.src   = path.trim();
+    docLogo.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+
+    docLogo.onerror = () => {
+      docLogo.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    };
+  }
+
+  function syncField(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function updateQuoteRef() {
+    document.getElementById('quote-number').textContent =
+      document.getElementById('c-num').value;
+  }
+
+  function rebuildSellerContact() {
+    const name  = document.getElementById('e-firma-nombre').value.trim();
+    const title = document.getElementById('e-firma-title').value.trim();
+    const tel   = document.getElementById('e-firma-tel').value.trim()
+               || document.getElementById('e-tel').value.trim();
+    const main  = [name, title].filter(Boolean).map(escHtml).join(' · ');
+
+    document.getElementById('seller-contact').innerHTML =
+      tel ? `${main}<br>${escHtml(tel)}` : main;
+  }
+
+  function rebuildCompanyInfo() {
+    const tel   = document.getElementById('e-tel').value.trim();
+    const email = document.getElementById('e-email').value.trim();
+    const web   = document.getElementById('e-web').value.trim();
+    const loc   = document.getElementById('e-loc').value.trim();
+    const taxId = document.getElementById('e-rfc').value.trim();
+
+    const contactLine = [tel, email, web].filter(Boolean).map(escHtml).join(' · ');
+    const lines = [];
+    if (contactLine) lines.push(contactLine);
+    if (taxId) lines.push(`Tax ID ${escHtml(taxId)}`);
+    if (loc) lines.push(escHtml(loc));
+
+    document.getElementById('company-details').innerHTML = lines.join('<br>');
+
+    const name = document.getElementById('e-nombre').value;
+    document.getElementById('company-name').textContent = name;
+    document.getElementById('company-tagline').textContent =
+      document.getElementById('e-tagline').value;
+  }
+
+  function rebuildClientInfo() {
+    const empresa  = document.getElementById('c-empresa').value;
+    const contacto = document.getElementById('c-contacto').value;
+    const email    = document.getElementById('c-email').value;
+    const tel      = document.getElementById('c-tel').value;
+    const loc      = document.getElementById('c-loc').value;
+    const validez  = document.getElementById('c-validez').value;
+
+    document.getElementById('client-info').innerHTML =
+      `<span class="client-name">${escHtml(empresa)}</span><br>${escHtml(contacto)}<br>${escHtml(email)} · ${escHtml(tel)}<br>${escHtml(loc)}`;
+
+    document.getElementById('quote-details').innerHTML =
+      `<div class="meta-line"><span>Quote</span><span id="quote-number">${escHtml(document.getElementById('c-num').value)}</span></div>` +
+      `<div class="meta-line"><span>Date</span><span id="quote-date">${formatDate(document.getElementById('c-fecha').value)}</span></div>` +
+      `<div class="meta-line"><span>Validity</span><span id="meta-validity">${validez} days</span></div>` +
+      `<div class="meta-line"><span>Currency</span><span>USD</span></div>`;
+  }
+
+  function formatDate(isoStr) {
+    if (!isoStr) return '-';
+    const [y, m, d] = isoStr.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  function formatDesc(desc) {
+    const text = String(desc || '').trim();
+    if (!text) return { name: '', meta: '' };
+
+    const comma = text.indexOf(',');
+    if (comma === -1) return { name: text, meta: '' };
+
+    const main = text.slice(0, comma).trim();
+    const finish = text.slice(comma + 1).trim();
+    const sizeMatch = main.match(/^(.+?)\s+(\d+[×x]\d+.*)$/i);
+
+    if (sizeMatch) {
+      const finishLabel = finish.replace(/\s*finish\s*$/i, '').trim();
+      const finishCap = finishLabel.charAt(0).toUpperCase() + finishLabel.slice(1);
+      return { name: sizeMatch[1].trim(), meta: `${sizeMatch[2].trim()} · ${finishCap}` };
+    }
+
+    return { name: main, meta: finish.charAt(0).toUpperCase() + finish.slice(1) };
+  }
+
+  function renderDescHtml(desc) {
+    const parts = formatDesc(desc);
+    if (!parts.meta) return escHtml(parts.name);
+    return `<span class="desc-name">${escHtml(parts.name)}</span><span class="desc-meta">${escHtml(parts.meta)}</span>`;
+  }
+
+  function cleanDesc(desc) {
+    return String(desc || '')
+      .replace(/\s*·\s*[\d.]+\s*SF\/PC\s*·\s*SF\/Pallet\s+[\d.]+\s*$/i, '')
+      .trim();
+  }
+
+  function parseLegacyCatalog(desc) {
+    const text = String(desc || '');
+    const sfPalletMatch = text.match(/SF\/Pallet\s+([\d.]+)/i);
+    const dimMatch = text.match(/(\d+(?:\.\d+)?)"\s*x\s*(\d+(?:\.\d+)?)"/i);
+
+    let widthIn = 0;
+    let lengthIn = 0;
+    let sfPerPallet = 400;
+
+    if (dimMatch) {
+      widthIn = parseFloat(dimMatch[1]);
+      lengthIn = parseFloat(dimMatch[2]);
+    }
+
+    if (sfPalletMatch) {
+      sfPerPallet = parseFloat(sfPalletMatch[1]);
+    }
+
+    const kind = widthIn && lengthIn &&
+      Math.min(widthIn, lengthIn) >= 24 && Math.max(widthIn, lengthIn) >= 36
+      ? 'slab'
+      : 'tile';
+
+    return { widthIn, lengthIn, sfPerPallet, kind };
+  }
+
+  function normalizeItem(raw) {
+    const catalog = raw.desc ? parseLegacyCatalog(raw.desc) : {};
+    const item = {
+      code: raw.code || '',
+      desc: raw.desc ? cleanDesc(raw.desc) : '',
+      price: raw.price || 0,
+      pieces: raw.pieces ?? 0,
+      disc: raw.disc || 0,
+      kind: raw.kind || catalog.kind || 'tile',
+      widthIn: raw.widthIn ?? catalog.widthIn ?? 0,
+      lengthIn: raw.lengthIn ?? catalog.lengthIn ?? 0,
+      sfPerPallet: raw.sfPerPallet ?? catalog.sfPerPallet ?? 400,
+      lastEdited: raw.lastEdited || 'pieces',
+    };
+    syncItemQuantities(item);
+    return item;
+  }
+
+  function calcSfPerPiece(widthIn, lengthIn) {
+    if (!widthIn || !lengthIn) return 0;
+    return (widthIn * lengthIn) / 144;
+  }
+
+  function canCalcSf(item) {
+    return item.widthIn > 0 && item.lengthIn > 0 && item.pieces > 0;
+  }
+
+  function calcCoverageSf(item) {
+    if (!canCalcSf(item)) return null;
+    return (item.widthIn * item.lengthIn * item.pieces) / 144;
+  }
+
+  function calcItemDerived(item) {
+    const sfPerPiece = calcSfPerPiece(item.widthIn, item.lengthIn);
+    const coverageSf = calcCoverageSf(item);
+    const pieces = item.pieces || 0;
+
+    let pallets = null;
+    if (coverageSf != null && item.sfPerPallet > 0) {
+      pallets = coverageSf / item.sfPerPallet;
+    }
+
+    return {
+      sfPerPiece,
+      pieces,
+      pallets,
+      coverageSf,
+      valid: coverageSf != null,
+    };
+  }
+
+  function syncItemQuantities(item) {
+    if (item.lastEdited === 'pallets') {
+      if (!item.sfPerPallet || item.pallets == null) return;
+      const targetSf = item.pallets * item.sfPerPallet;
+      if (item.widthIn > 0 && item.lengthIn > 0) {
+        item.pieces = Math.round((targetSf * 144) / (item.widthIn * item.lengthIn));
+      }
+    }
+  }
+
+  function formatSf(n) {
+    if (n == null || isNaN(n)) return '-';
+    if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
+    return parseFloat(n.toFixed(1)).toString();
+  }
+
+  function formatPallets(n) {
+    if (n == null || isNaN(n)) return '-';
+    const rounded = Math.round(n * 100) / 100;
+    if (rounded === 0) return '-';
+    return Number.isInteger(rounded) ? String(rounded) : String(rounded);
+  }
+
+  function formatPieces(n) {
+    if (n == null || isNaN(n) || n <= 0) return '-';
+    return String(Math.round(n));
+  }
+
+  function lineSubtotal(item) {
+    const sf = calcCoverageSf(item);
+    if (sf == null) return null;
+    return item.price * sf * (1 - item.disc / 100);
+  }
+
+  function formatSubtotal(item) {
+    const sub = lineSubtotal(item);
+    return sub == null ? '-' : fmt(sub);
+  }
+
+  function fmt(n) {
+    return '$ ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function renderEditorRows() {
+    const tbody = document.getElementById('items-tbody');
+    tbody.innerHTML = '';
+    items.forEach((item, i) => {
+      syncItemQuantities(item);
+      const derived = calcItemDerived(item);
+      const sfClass = derived.valid ? '' : ' calc-pending';
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr id="erow-${i}">
+          <td class="col-code">
+            <input type="text" value="${escHtml(item.code)}"
+                   oninput="syncItemField(${i},'code',this.value)" />
+          </td>
+          <td class="col-desc">
+            <input type="text" value="${escHtml(item.desc)}"
+                   oninput="syncItemField(${i},'desc',this.value)" />
+          </td>
+          <td class="col-price">
+            <input type="number" value="${item.price}" min="0" step="0.01"
+                   oninput="syncItemField(${i},'price',parseFloat(this.value)||0)" />
+          </td>
+          <td class="col-qty">
+            <input type="number" value="${item.pieces || ''}" min="0" step="1"
+                   oninput="syncItemField(${i},'pieces',parseFloat(this.value)||0)" />
+          </td>
+          <td class="col-disc">
+            <input type="number" value="${item.disc}" min="0" max="100" step="0.1"
+                   oninput="syncItemField(${i},'disc',parseFloat(this.value)||0)" />
+          </td>
+          <td class="col-sub" style="text-align:right; font-size:.78rem; color:var(--primary);">
+            ${formatSubtotal(item)}
+          </td>
+          <td class="col-del">
+            <button class="btn-del" onclick="removeItem(${i})">✕</button>
+          </td>
+        </tr>
+        <tr id="erow-sub-${i}" class="editor-sub-row">
+          <td colspan="7">
+            <div class="editor-sub-fields">
+              <div class="sub-field">
+                <label>Type</label>
+                <select onchange="syncItemField(${i},'kind',this.value)">
+                  <option value="tile" ${item.kind === 'tile' ? 'selected' : ''}>Tile</option>
+                  <option value="slab" ${item.kind === 'slab' ? 'selected' : ''}>Slab</option>
+                </select>
+              </div>
+              <div class="sub-field">
+                <label>Width (in)</label>
+                <input type="number" value="${item.widthIn || ''}" min="0" step="0.1"
+                       oninput="syncItemField(${i},'widthIn',parseFloat(this.value)||0)" />
+              </div>
+              <div class="sub-field">
+                <label>Length (in)</label>
+                <input type="number" value="${item.lengthIn || ''}" min="0" step="0.1"
+                       oninput="syncItemField(${i},'lengthIn',parseFloat(this.value)||0)" />
+              </div>
+              <div class="sub-field">
+                <label>SF/Pallet</label>
+                <input type="number" value="${item.sfPerPallet}" min="0" step="1"
+                       oninput="syncItemField(${i},'sfPerPallet',parseFloat(this.value)||0)" />
+              </div>
+              <div class="sub-field">
+                <label>Pallets</label>
+                <input type="number" value="${derived.pallets != null ? formatPallets(derived.pallets) : ''}" min="0" step="0.01"
+                       oninput="syncItemField(${i},'pallets',parseFloat(this.value)||0)" />
+              </div>
+              <div class="sub-field">
+                <label>SF</label>
+                <span class="sub-readonly${sfClass}">${formatSf(derived.coverageSf)}</span>
+              </div>
+              <div class="sub-field">
+                <label>SF/PC</label>
+                <span class="sub-readonly${derived.sfPerPiece > 0 ? '' : ' calc-pending'}">${derived.sfPerPiece > 0 ? derived.sfPerPiece.toFixed(2) : '-'}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `);
+    });
+  }
+
+  function renderDocRows() {
+    const tbody = document.getElementById('doc-tbody');
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No items added</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = '';
+    items.forEach(item => {
+      syncItemQuantities(item);
+      const derived = calcItemDerived(item);
+      const pending = derived.valid ? '' : ' td-pending';
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td class="td-code">${escHtml(item.code)}</td>
+          <td class="td-desc">${renderDescHtml(item.desc)}</td>
+          <td class="td-right">${fmt(item.price)}</td>
+          <td class="td-num-sm${pending}">${formatSf(derived.coverageSf)}</td>
+          <td class="td-num-sm${pending}">${formatPieces(derived.pieces)}</td>
+          <td class="td-num-sm${pending}">${formatPallets(derived.pallets)}</td>
+          <td class="td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>
+          <td class="td-right${pending}">${formatSubtotal(item)}</td>
+        </tr>
+      `);
+    });
+  }
+
+  function recalcTotals() {
+    let grossSubtotal = 0;
+    let lineDiscount  = 0;
+
+    items.forEach(item => {
+      const sf = calcCoverageSf(item);
+      if (sf == null) return;
+      const lineGross = item.price * sf;
+      grossSubtotal += lineGross;
+      lineDiscount  += lineGross * (item.disc / 100);
+    });
+
+    const netSubtotal = grossSubtotal - lineDiscount;
+    const gdisc       = parseFloat(document.getElementById('global-disc').value) || 0;
+    const globalDisc  = netSubtotal * (gdisc / 100);
+    const totalDisc   = lineDiscount + globalDisc;
+    const shipping    = parseFloat(document.getElementById('shipping-cost').value) || 0;
+    const total       = grossSubtotal - totalDisc + shipping;
+
+    document.getElementById('tf-subtotal').textContent = fmt(grossSubtotal);
+    document.getElementById('tf-total').textContent    = fmt(total);
+
+    const lineDiscRow = document.getElementById('tf-line-disc-row');
+    if (lineDiscount > 0) {
+      lineDiscRow.style.display = '';
+      document.getElementById('tf-line-discount').textContent = `- ${fmt(lineDiscount)}`;
+    } else {
+      lineDiscRow.style.display = 'none';
+    }
+
+    const globalDiscRow = document.getElementById('tf-global-disc-row');
+    if (globalDisc > 0) {
+      globalDiscRow.style.display = '';
+      document.getElementById('tf-global-disc-label').textContent = `Discount (${gdisc}%)`;
+      document.getElementById('tf-global-discount').textContent = `- ${fmt(globalDisc)}`;
+    } else {
+      globalDiscRow.style.display = 'none';
+    }
+
+    const shipRow = document.getElementById('tf-ship-row');
+    if (shipping > 0) {
+      shipRow.style.display = '';
+      document.getElementById('tf-shipping').textContent = fmt(shipping);
+    } else {
+      shipRow.style.display = 'none';
+    }
+
+    renderEditorRows();
+  }
+
+  function addItem() {
+    items.push(normalizeItem({
+      code: '',
+      desc: '',
+      price: 0,
+      pieces: 0,
+      disc: 0,
+      kind: 'tile',
+      widthIn: 0,
+      lengthIn: 0,
+      sfPerPallet: 400,
+    }));
+    renderEditorRows();
+    renderDocRows();
+    recalcTotals();
+  }
+
+  function removeItem(i) {
+    items.splice(i, 1);
+    renderEditorRows();
+    renderDocRows();
+    recalcTotals();
+  }
+
+  function syncItemField(i, field, value) {
+    const item = items[i];
+    item[field] = value;
+
+    if (field === 'pieces' || field === 'widthIn' || field === 'lengthIn') {
+      item.lastEdited = 'pieces';
+    } else if (field === 'pallets') {
+      item.lastEdited = 'pallets';
+      syncItemQuantities(item);
+    }
+
+    renderDocRows();
+    recalcTotals();
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
