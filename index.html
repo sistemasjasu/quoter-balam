@@ -682,6 +682,11 @@
 
     .doc-closing {
       margin-top: 4mm;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6mm 10mm;
     }
 
     .doc-table {
@@ -842,11 +847,10 @@
 
     /* --- TOTALS BLOCK --- */
     .totals-block {
-      margin-left: auto;
+      flex: 0 0 auto;
       width: 100%;
       max-width: 250px;
-      margin-top: 0;
-      margin-bottom: 0;
+      margin: 0;
     }
 
     .totals-block.is-hidden {
@@ -879,13 +883,17 @@
       color: var(--discount);
     }
 
+    .totals-separator {
+      margin: 8px 0 4px;
+      border-top: 1px solid var(--primary);
+    }
+
     .totals-final {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-top: 8px;
-      padding-top: 10px;
-      border-top: 1px solid var(--primary);
+      margin-top: 4px;
+      padding-top: 4px;
       gap: 16px;
     }
 
@@ -906,7 +914,16 @@
 
     /* --- NOTES --- */
     .doc-notes {
-      padding-top: 3mm;
+      flex: 1 1 200px;
+      min-width: 0;
+      max-width: calc(100% - 260px);
+      padding-top: 0;
+      align-self: flex-start;
+    }
+
+    .doc-closing:has(.totals-block.is-hidden) .doc-notes {
+      max-width: none;
+      flex: 1 1 100%;
     }
 
     .doc-notes p {
@@ -964,6 +981,10 @@
       .doc-table tbody tr {
         break-inside: auto;
         page-break-inside: auto;
+      }
+      .doc-closing {
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
       .totals-block {
         break-inside: avoid;
@@ -1120,6 +1141,10 @@ Palm Beach, FL 33480</textarea>
         <label>Valid (days)</label>
         <input type="number" id="c-validez" value="0" min="0" step="1" oninput="rebuildClientInfo()" />
       </div>
+      <div class="form-field">
+        <label>Anticipo (%)</label>
+        <input type="number" id="c-anticipo" value="50" min="0" max="100" step="0.1" oninput="syncPaymentDepositFromAnticipo(); recalcTotals()" />
+      </div>
       <div class="form-field full">
         <label>Payment terms</label>
         <input type="text" id="c-payment" value="50% deposit · balance before shipment" oninput="rebuildClientInfo()" />
@@ -1152,12 +1177,16 @@ Palm Beach, FL 33480</textarea>
         <input type="number" id="global-disc" value="0" min="0" max="100" step="0.1" oninput="recalcTotals()" />
       </div>
       <div class="discount-row">
-        <label>Shipping (USD)</label>
+        <label>Freight (USD)</label>
         <input type="number" id="shipping-cost" value="0" min="0" step="0.01" oninput="recalcTotals()" />
       </div>
       <div class="discount-row">
+        <label>Sales tax (%)</label>
+        <input type="number" id="sales-tax-pct" value="0" min="0" max="100" step="0.1" oninput="recalcTotals()" />
+      </div>
+      <div class="discount-row">
         <label class="checkbox-label">
-          <input type="checkbox" id="show-totals" onchange="toggleTotalsVisibility()" />
+          <input type="checkbox" id="show-totals" checked onchange="toggleTotalsVisibility()" />
           Show totals summary
         </label>
       </div>
@@ -1237,32 +1266,42 @@ Palm Beach, FL 33480</textarea>
   </div>
 
   <div class="doc-closing">
-    <div class="totals-block is-hidden" id="doc-tfoot">
-      <div class="totals-row">
-        <span class="tf-label">Subtotal</span>
-        <span class="tf-value" id="tf-subtotal">$ 0.00</span>
-      </div>
-      <div class="totals-row tf-discount" id="tf-line-disc-row" style="display:none">
-        <span class="tf-label">Discount</span>
-        <span class="tf-value" id="tf-line-discount">$ 0.00</span>
-      </div>
-      <div class="totals-row tf-discount" id="tf-global-disc-row" style="display:none">
-        <span class="tf-label" id="tf-global-disc-label">Discount</span>
-        <span class="tf-value" id="tf-global-discount">$ 0.00</span>
-      </div>
-      <div class="totals-row" id="tf-ship-row" style="display:none">
-        <span class="tf-label">Shipping</span>
-        <span class="tf-value" id="tf-shipping">$ 0.00</span>
-      </div>
-      <div class="totals-final tf-total">
-        <span class="tf-label">Total</span>
-        <span class="tf-value" id="tf-total">$ 0.00</span>
-      </div>
-    </div>
-
     <div class="doc-notes">
       <p id="doc-notes-text">• Lead time: 15-20 business days
 • Natural stone may vary in tone and veining</p>
+    </div>
+
+    <div class="totals-block" id="doc-tfoot">
+      <div class="totals-row">
+        <span class="tf-label">Net Order</span>
+        <span class="tf-value" id="tf-net-order">$ 0.00</span>
+      </div>
+      <div class="totals-row tf-discount" id="tf-disc-row">
+        <span class="tf-label" id="tf-disc-label">Less Discount</span>
+        <span class="tf-value" id="tf-less-discount">- $ 0.00</span>
+      </div>
+      <div class="totals-row" id="tf-freight-row">
+        <span class="tf-label">Freight</span>
+        <span class="tf-value" id="tf-freight">$ 0.00</span>
+      </div>
+      <div class="totals-row" id="tf-tax-row">
+        <span class="tf-label" id="tf-tax-label">Sales Tax</span>
+        <span class="tf-value" id="tf-sales-tax">$ 0.00</span>
+      </div>
+      <div class="totals-separator" aria-hidden="true"></div>
+      <div class="totals-final">
+        <span class="tf-label">Order Total</span>
+        <span class="tf-value" id="tf-order-total">$ 0.00</span>
+      </div>
+      <div class="totals-row tf-discount" id="tf-deposit-row">
+        <span class="tf-label" id="tf-deposit-label">Less Deposit</span>
+        <span class="tf-value" id="tf-less-deposit">- $ 0.00</span>
+      </div>
+      <div class="totals-separator" aria-hidden="true"></div>
+      <div class="totals-final">
+        <span class="tf-label">Order balance</span>
+        <span class="tf-value" id="tf-order-balance">$ 0.00</span>
+      </div>
     </div>
   </div>
 
@@ -1281,8 +1320,8 @@ Palm Beach, FL 33480</textarea>
     'e-nombre', 'e-tagline', 'e-rfc', 'e-tel', 'e-email', 'e-web', 'e-loc',
     'e-firma-nombre', 'e-firma-title', 'e-firma-tel', 'logo-path',
     'c-empresa', 'c-contacto', 'c-email', 'c-tel', 'c-loc', 'c-ship-to',
-    'c-num', 'c-fecha', 'c-validez', 'c-payment',
-    'global-disc', 'shipping-cost', 'notas-text',
+    'c-num', 'c-fecha', 'c-validez', 'c-anticipo', 'c-payment',
+    'global-disc', 'shipping-cost', 'sales-tax-pct', 'notas-text',
   ];
 
   let loadedQuoteCode = null;
@@ -1449,12 +1488,16 @@ Palm Beach, FL 33480</textarea>
   function applyQuoteState(state) {
     if (!state) return;
     const fields = state.fields || {};
+    if (fields['c-anticipo'] === undefined && fields['deposit-pct'] !== undefined) {
+      fields['c-anticipo'] = fields['deposit-pct'];
+    }
     QUOTE_FIELD_IDS.forEach(id => {
       const el = document.getElementById(id);
       if (!el || fields[id] === undefined) return;
       el.value = fields[id];
     });
-    document.getElementById('show-totals').checked = !!state.showTotals;
+    document.getElementById('show-totals').checked =
+      state.showTotals === undefined ? true : !!state.showTotals;
     if (state.docColVisibility) {
       Object.assign(docColVisibility, state.docColVisibility);
       syncDocColToggleUI();
@@ -1464,7 +1507,7 @@ Palm Beach, FL 33480</textarea>
 
     rebuildCompanyInfo();
     rebuildSellerContact();
-    rebuildClientInfo();
+    syncPaymentDepositFromAnticipo();
     updateQuoteRef();
     updateLogo(document.getElementById('logo-path').value);
     syncField('doc-notes-text', document.getElementById('notas-text').value);
@@ -1789,6 +1832,39 @@ Palm Beach, FL 33480</textarea>
   function hasValidityDays(validDays) {
     const days = parseInt(String(validDays ?? '').trim(), 10);
     return !isNaN(days) && days > 0;
+  }
+
+  const PAYMENT_DEPOSIT_RE = /\d+(?:\.\d+)?\s*%\s*deposit\b/i;
+
+  function readAnticipoPct() {
+    const raw = document.getElementById('c-anticipo').value;
+    if (raw === '') return 0;
+    const n = parseFloat(raw);
+    return isNaN(n) ? 0 : Math.max(0, Math.min(100, n));
+  }
+
+  function formatAnticipoPctLabel(n) {
+    const rounded = Math.round(n * 100) / 100;
+    return Number.isInteger(rounded) ? String(rounded) : String(rounded);
+  }
+
+  function syncPaymentDepositFromAnticipo() {
+    const pct = readAnticipoPct();
+    const phrase = `${formatAnticipoPctLabel(pct)}% deposit`;
+    const paymentEl = document.getElementById('c-payment');
+    let text = paymentEl.value;
+
+    if (PAYMENT_DEPOSIT_RE.test(text)) {
+      text = text.replace(PAYMENT_DEPOSIT_RE, phrase);
+    } else {
+      const trimmed = text.trim();
+      text = trimmed ? `${phrase} · ${trimmed}` : `${phrase} · balance before shipment`;
+    }
+
+    if (paymentEl.value !== text) {
+      paymentEl.value = text;
+    }
+    rebuildClientInfo();
   }
 
   function rebuildClientInfo() {
@@ -2173,36 +2249,31 @@ Palm Beach, FL 33480</textarea>
     const gdisc       = parseFloat(document.getElementById('global-disc').value) || 0;
     const globalDisc  = netSubtotal * (gdisc / 100);
     const totalDisc   = lineDiscount + globalDisc;
-    const shipping    = parseFloat(document.getElementById('shipping-cost').value) || 0;
-    const total       = grossSubtotal - totalDisc + shipping;
+    const freight     = parseFloat(document.getElementById('shipping-cost').value) || 0;
+    const taxPct      = parseFloat(document.getElementById('sales-tax-pct').value) || 0;
+    const preTaxBase  = grossSubtotal - totalDisc + freight;
+    const salesTax    = preTaxBase * (taxPct / 100);
+    const orderTotal  = preTaxBase + salesTax;
+    const depositPct  = readAnticipoPct();
+    const lessDeposit = orderTotal * (depositPct / 100);
+    const orderBalance = orderTotal - lessDeposit;
 
-    document.getElementById('tf-subtotal').textContent = fmt(grossSubtotal);
-    document.getElementById('tf-total').textContent    = fmt(total);
+    document.getElementById('tf-net-order').textContent    = fmt(grossSubtotal);
+    document.getElementById('tf-order-total').textContent  = fmt(orderTotal);
+    document.getElementById('tf-order-balance').textContent = fmt(orderBalance);
 
-    const lineDiscRow = document.getElementById('tf-line-disc-row');
-    if (lineDiscount > 0) {
-      lineDiscRow.style.display = '';
-      document.getElementById('tf-line-discount').textContent = `- ${fmt(lineDiscount)}`;
-    } else {
-      lineDiscRow.style.display = 'none';
-    }
+    const discLabel = document.getElementById('tf-disc-label');
+    discLabel.textContent = gdisc > 0 ? `Less Discount (${gdisc}%)` : 'Less Discount';
+    document.getElementById('tf-less-discount').textContent = `- ${fmt(totalDisc)}`;
 
-    const globalDiscRow = document.getElementById('tf-global-disc-row');
-    if (globalDisc > 0) {
-      globalDiscRow.style.display = '';
-      document.getElementById('tf-global-disc-label').textContent = `Discount (${gdisc}%)`;
-      document.getElementById('tf-global-discount').textContent = `- ${fmt(globalDisc)}`;
-    } else {
-      globalDiscRow.style.display = 'none';
-    }
+    document.getElementById('tf-freight').textContent = fmt(freight);
 
-    const shipRow = document.getElementById('tf-ship-row');
-    if (shipping > 0) {
-      shipRow.style.display = '';
-      document.getElementById('tf-shipping').textContent = fmt(shipping);
-    } else {
-      shipRow.style.display = 'none';
-    }
+    document.getElementById('tf-tax-label').textContent = `Sales Tax (${taxPct}%)`;
+    document.getElementById('tf-sales-tax').textContent = fmt(salesTax);
+
+    document.getElementById('tf-deposit-label').textContent =
+      `Less Deposit (${formatAnticipoPctLabel(depositPct)}%)`;
+    document.getElementById('tf-less-deposit').textContent = `- ${fmt(lessDeposit)}`;
 
     updateEditorSubtotals();
     updateEditorDerivedFields();
