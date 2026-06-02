@@ -250,7 +250,7 @@
       transition: max-height .35s ease;
     }
     #editor-panel.collapsed { max-height: 0; border: none; }
-    #editor-panel.expanded  { max-height: 3200px; }
+    #editor-panel.expanded  { max-height: none; overflow: visible; }
 
     .editor-tabs {
       display: flex;
@@ -434,30 +434,10 @@
       margin-top: 0;
     }
 
-    .editor-items-checks {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 20px;
-      align-items: center;
-      width: 100%;
-      flex: 1 1 100%;
-      padding-top: 4px;
-    }
-
-    .editor-items-checks .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: .78rem;
-      color: var(--muted);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .editor-items-checks .checkbox-label input[type="checkbox"] {
-      width: auto;
-      accent-color: var(--primary);
-      cursor: pointer;
+    .discount-row--inline-checks {
+      margin-top: 0;
+      gap: 18px;
+      flex: 0 0 auto;
     }
 
     .discount-row {
@@ -1230,7 +1210,7 @@ Palm Beach, FL 33480</textarea>
         <label>Sales tax (%)</label>
         <input type="number" id="sales-tax-pct" value="0" min="0" max="100" step="0.1" oninput="recalcTotals()" />
       </div>
-      <div class="editor-items-checks">
+      <div class="discount-row discount-row--inline-checks">
         <label class="checkbox-label">
           <input type="checkbox" id="show-totals" checked onchange="toggleTotalsVisibility()" />
           Show totals summary
