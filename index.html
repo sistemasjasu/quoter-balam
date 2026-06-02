@@ -513,18 +513,44 @@
     /* --- META BLOCKS --- */
     .doc-meta {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 0;
       margin-bottom: 6mm;
     }
 
-    .meta-block {
-      padding: 4mm 5mm 4mm 0;
+    .doc-meta--two-cols {
+      grid-template-columns: 1fr 1fr;
     }
 
-    .meta-block:last-child {
+    .doc-meta--three-cols {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .doc-meta--two-cols .meta-block {
+      padding: 4mm 5mm 4mm 0;
+      border-left: none;
+    }
+
+    .doc-meta--two-cols .meta-block:last-child {
       padding: 4mm 0 4mm 5mm;
       border-left: 1px solid var(--border-subtle);
+    }
+
+    .doc-meta--three-cols .meta-block {
+      padding: 4mm 4mm;
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .doc-meta--three-cols .meta-block:first-child {
+      padding-left: 0;
+      border-left: none;
+    }
+
+    .doc-meta--three-cols .meta-block:last-child {
+      padding-right: 0;
+    }
+
+    .meta-block {
+      padding: 4mm 4mm;
     }
 
     .meta-block h3 {
@@ -568,6 +594,7 @@
 
     .meta-line span:last-child {
       text-align: right;
+      max-width: 58%;
     }
 
     /* --- PRODUCT TABLE --- */
@@ -580,11 +607,12 @@
     .doc-table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     .doc-table thead th {
-      padding: 6px 4px 5px;
-      font-size: .6rem;
+      padding: 5px 3px 4px;
+      font-size: .58rem;
       font-weight: 600;
       text-transform: uppercase;
       text-align: left;
@@ -593,18 +621,67 @@
       background: transparent;
     }
 
-    .doc-table thead th.col-num { text-align: right; }
+    .doc-table thead th.col-num {
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      padding: 5px 6px 4px;
+      line-height: 1.2;
+      font-size: .55rem;
+    }
+
+    .doc-table thead th.col-desc {
+      padding-right: 8px;
+    }
+
+    .doc-table thead th.col-unit-price {
+      padding-left: 10px;
+      white-space: normal;
+      line-height: 1.15;
+    }
+
+    .doc-table thead th.col-unit-price .th-unit-sub {
+      display: block;
+      font-size: .48rem;
+      font-weight: 500;
+      text-transform: none;
+      margin-top: 1px;
+    }
+
+    .doc-table col.col-code,
+    .doc-table thead th.col-code { width: 92px; }
+
+    .doc-table col.col-desc,
+    .doc-table thead th.col-desc { width: auto; }
+
+    .doc-table col.col-unit-price,
+    .doc-table thead th.col-unit-price { width: 78px; }
+
+    .doc-table col.col-total-sf,
+    .doc-table thead th.col-total-sf { width: 50px; }
+
+    .doc-table col.col-total-pcs,
+    .doc-table thead th.col-total-pcs { width: 50px; }
+
+    .doc-table col.col-pallets,
+    .doc-table thead th.col-pallets { width: 54px; }
+
+    .doc-table col.col-disc,
+    .doc-table thead th.col-disc { width: 38px; }
+
+    .doc-table col.col-subtotal,
+    .doc-table thead th.col-subtotal { width: 74px; }
 
     .doc-table tbody tr {
       border-bottom: 1px solid var(--border-subtle);
     }
 
     .doc-table tbody td {
-      padding: 6px 4px;
-      font-size: .75rem;
+      padding: 5px 3px;
+      font-size: .72rem;
       color: var(--text);
       vertical-align: top;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
     .doc-table thead th.col-code,
@@ -613,52 +690,46 @@
     }
 
     .doc-table tbody td.td-code {
-      font-size: .62rem;
+      font-size: .6rem;
       color: var(--muted);
-      width: 88px;
-      min-width: 88px;
       white-space: nowrap;
-      padding-top: 7px;
+      padding-top: 6px;
+    }
+
+    .doc-table tbody td.td-desc {
+      overflow: hidden;
     }
 
     .doc-table tbody td.td-desc .desc-name {
       display: block;
-      font-size: .78rem;
+      font-size: .72rem;
       color: var(--text);
-      margin-bottom: 2px;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .doc-table tbody td.td-desc .desc-meta {
       display: block;
-      font-size: .66rem;
+      font-size: .62rem;
       color: var(--muted);
     }
 
-    .doc-table tbody td.td-right {
+    .doc-table tbody td.td-num {
       text-align: right;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      font-size: .74rem;
+      font-size: .7rem;
+      padding: 5px 6px;
     }
 
-    .doc-table tbody td.td-num-sm {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-      font-size: .68rem;
-      padding-left: 2px;
-      padding-right: 2px;
+    .doc-table tbody tr td:nth-child(3).td-num {
+      padding-left: 10px;
     }
 
-    .doc-table tbody td.td-num-sm.td-pending {
+    .doc-table tbody td.td-num.td-disc {
       color: var(--discount);
-    }
-
-    .doc-table tbody td.td-disc {
-      text-align: right;
-      font-size: .72rem;
-      color: var(--discount);
-      font-variant-numeric: tabular-nums;
     }
 
     .empty-row td {
@@ -887,10 +958,6 @@
         <input type="text" id="e-firma-tel" value="+1 (305) 555-0142" oninput="rebuildSellerContact()" />
       </div>
       <div class="form-field full">
-        <label>Address</label>
-        <input type="text" id="e-dir" value="50W, Mastha, Dr. Suite, Ky Biscayne, FL" oninput="rebuildCompanyInfo()" />
-      </div>
-      <div class="form-field full">
         <label>Logo path (local file or URL)</label>
         <input type="text" id="logo-path"
                value="./logo.png"
@@ -920,13 +987,14 @@
         <label>Phone</label>
         <input type="text" id="c-tel" value="+1 (561) 555-0193" oninput="rebuildClientInfo()" />
       </div>
-      <div class="form-field">
+      <div class="form-field full">
         <label>Location (header display)</label>
         <input type="text" id="c-loc" value="Palm Beach, FL" oninput="rebuildClientInfo()" />
       </div>
       <div class="form-field full">
-        <label>Address</label>
-        <input type="text" id="c-dir" value="260 Worth Ave., Suite 200, Palm Beach, FL 33480" oninput="rebuildClientInfo()" />
+        <label>Ship To</label>
+        <textarea id="c-ship-to" rows="3" oninput="rebuildClientInfo()">1200 S Ocean Blvd, Suite 400
+Palm Beach, FL 33480</textarea>
       </div>
       <div class="form-field">
         <label>Quote number</label>
@@ -934,11 +1002,15 @@
       </div>
       <div class="form-field">
         <label>Date</label>
-        <input type="date" id="c-fecha" oninput="syncField('quote-date', formatDate(this.value))" />
+        <input type="date" id="c-fecha" oninput="rebuildClientInfo()" />
       </div>
       <div class="form-field">
         <label>Valid (days)</label>
         <input type="number" id="c-validez" value="30" min="1" oninput="rebuildClientInfo()" />
+      </div>
+      <div class="form-field full">
+        <label>Payment terms</label>
+        <input type="text" id="c-payment" value="50% deposit · balance before shipment" oninput="rebuildClientInfo()" />
       </div>
     </div>
   </div>
@@ -951,7 +1023,7 @@
           <tr>
             <th class="col-code">Code</th>
             <th class="col-desc">Description</th>
-            <th class="col-price">Unit price</th>
+            <th class="col-price">Unit price (per SF)</th>
             <th class="col-qty">Pcs</th>
             <th class="col-disc">Disc. %</th>
             <th class="col-sub">Subtotal</th>
@@ -1012,7 +1084,7 @@
     <p class="seller-contact" id="seller-contact">Gonzalo Fernandez · Commercial Director<br>+1 (305) 555-0142</p>
   </header>
 
-  <div class="doc-meta">
+  <div class="doc-meta doc-meta--three-cols" id="doc-meta">
     <div class="meta-block">
       <h3>Bill To</h3>
       <p id="client-info">
@@ -1022,29 +1094,44 @@
         Palm Beach, FL
       </p>
     </div>
+    <div class="meta-block" id="ship-to-block">
+      <h3>Ship To</h3>
+      <p id="ship-to-info">1200 S Ocean Blvd, Suite 400<br>Palm Beach, FL 33480</p>
+    </div>
     <div class="meta-block">
       <h3>Quote Details</h3>
       <div id="quote-details">
         <div class="meta-line"><span>Quote</span><span id="quote-number">QUO-2026-0001</span></div>
         <div class="meta-line"><span>Date</span><span id="quote-date">-</span></div>
-        <div class="meta-line"><span>Validity</span><span id="meta-validity">30 days</span></div>
+        <div class="meta-line"><span>Expires</span><span id="quote-expires">-</span></div>
         <div class="meta-line"><span>Currency</span><span>USD</span></div>
+        <div class="meta-line"><span>Payment</span><span id="quote-payment">50% deposit · balance before shipment</span></div>
       </div>
     </div>
   </div>
 
   <div class="doc-table-wrap">
     <table class="doc-table">
+      <colgroup>
+        <col class="col-code" />
+        <col class="col-desc" />
+        <col class="col-unit-price" />
+        <col class="col-total-sf" />
+        <col class="col-total-pcs" />
+        <col class="col-pallets" />
+        <col class="col-disc" />
+        <col class="col-subtotal" />
+      </colgroup>
       <thead>
         <tr>
-          <th style="width:88px">Code</th>
-          <th>Description</th>
-          <th class="col-num" style="width:72px">Unit Price</th>
-          <th class="col-num" style="width:44px">SF</th>
-          <th class="col-num" style="width:36px">Pcs</th>
-          <th class="col-num" style="width:36px">Plt</th>
-          <th class="col-num" style="width:44px">Disc.</th>
-          <th class="col-num" style="width:80px">Subtotal</th>
+          <th class="col-code">Code</th>
+          <th class="col-desc">Description</th>
+          <th class="col-num col-unit-price">Unit Price<span class="th-unit-sub">per SF</span></th>
+          <th class="col-num col-total-sf">Total SF</th>
+          <th class="col-num col-total-pcs">Total Pcs</th>
+          <th class="col-num col-pallets">Pallets</th>
+          <th class="col-num col-disc">Disc.</th>
+          <th class="col-num col-subtotal">Subtotal</th>
         </tr>
       </thead>
       <tbody id="doc-tbody"></tbody>
@@ -1141,7 +1228,6 @@
 
     const today = new Date();
     document.getElementById('c-fecha').valueAsDate = today;
-    document.getElementById('quote-date').textContent = formatDate(today.toISOString().slice(0, 10));
 
     rebuildCompanyInfo();
     rebuildSellerContact();
@@ -1264,16 +1350,23 @@
     const email    = document.getElementById('c-email').value;
     const tel      = document.getElementById('c-tel').value;
     const loc      = document.getElementById('c-loc').value;
+    const shipTo   = document.getElementById('c-ship-to').value;
+    const fecha    = document.getElementById('c-fecha').value;
     const validez  = document.getElementById('c-validez').value;
+    const payment  = document.getElementById('c-payment').value.trim();
 
     document.getElementById('client-info').innerHTML =
       `<span class="client-name">${escHtml(empresa)}</span><br>${escHtml(contacto)}<br>${escHtml(email)} · ${escHtml(tel)}<br>${escHtml(loc)}`;
 
+    document.getElementById('ship-to-info').innerHTML = formatShipTo(shipTo);
+    updateShipToLayout(shipTo);
+
     document.getElementById('quote-details').innerHTML =
       `<div class="meta-line"><span>Quote</span><span id="quote-number">${escHtml(document.getElementById('c-num').value)}</span></div>` +
-      `<div class="meta-line"><span>Date</span><span id="quote-date">${formatDate(document.getElementById('c-fecha').value)}</span></div>` +
-      `<div class="meta-line"><span>Validity</span><span id="meta-validity">${validez} days</span></div>` +
-      `<div class="meta-line"><span>Currency</span><span>USD</span></div>`;
+      `<div class="meta-line"><span>Date</span><span id="quote-date">${formatDate(fecha)}</span></div>` +
+      `<div class="meta-line"><span>Expires</span><span id="quote-expires">${computeExpirationDate(fecha, validez)}</span></div>` +
+      `<div class="meta-line"><span>Currency</span><span>USD</span></div>` +
+      `<div class="meta-line"><span>Payment</span><span id="quote-payment">${payment ? escHtml(payment) : '—'}</span></div>`;
   }
 
   function formatDate(isoStr) {
@@ -1281,6 +1374,44 @@
     const [y, m, d] = isoStr.split('-');
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  function computeExpirationDate(isoDate, validDays) {
+    if (!isoDate || !validDays) return '-';
+    const days = parseInt(validDays, 10);
+    if (!days || days < 1) return '-';
+    const base = new Date(`${isoDate}T12:00:00`);
+    if (isNaN(base.getTime())) return '-';
+    base.setDate(base.getDate() + days);
+    const y = base.getFullYear();
+    const m = String(base.getMonth() + 1).padStart(2, '0');
+    const d = String(base.getDate()).padStart(2, '0');
+    return formatDate(`${y}-${m}-${d}`);
+  }
+
+  function hasShipTo(text) {
+    return String(text || '')
+      .split(/\r?\n/)
+      .some(line => line.trim());
+  }
+
+  function formatShipTo(text) {
+    const lines = String(text || '')
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .filter(Boolean);
+    if (!lines.length) return '';
+    return lines.map(escHtml).join('<br>');
+  }
+
+  function updateShipToLayout(shipTo) {
+    const hasShip = hasShipTo(shipTo);
+    const shipBlock = document.getElementById('ship-to-block');
+    const docMeta = document.getElementById('doc-meta');
+
+    shipBlock.hidden = !hasShip;
+    docMeta.classList.toggle('doc-meta--two-cols', !hasShip);
+    docMeta.classList.toggle('doc-meta--three-cols', hasShip);
   }
 
   function formatDesc(desc) {
@@ -1378,24 +1509,36 @@
 
   function formatSf(n) {
     if (n == null || isNaN(n)) return '-';
-    if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
-    return parseFloat(n.toFixed(2)).toString();
+    if (Math.abs(n - Math.round(n)) < 0.001) {
+      return Math.round(n).toLocaleString('en-US');
+    }
+    return n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   }
 
   function formatPallets(n) {
     if (n == null || isNaN(n) || n <= 0) return '-';
     const rounded = Math.round(n * 100) / 100;
-    return Number.isInteger(rounded) ? String(rounded) : String(rounded);
+    if (Number.isInteger(rounded)) {
+      return rounded.toLocaleString('en-US');
+    }
+    return rounded.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   }
 
   function formatPieces(n) {
     if (n == null || isNaN(n) || n <= 0) return '-';
-    return String(Math.round(n));
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  function calcLineGross(item) {
+    const pallets = Number(item.pallets) || 0;
+    if (!item.sfPerPallet || item.sfPerPallet <= 0 || pallets <= 0) return null;
+    return item.price * item.sfPerPallet * pallets;
   }
 
   function lineSubtotal(item) {
-    if (!item.sfPerPallet || item.sfPerPallet <= 0) return null;
-    return item.price * item.sfPerPallet * (1 - item.disc / 100);
+    const gross = calcLineGross(item);
+    if (gross == null) return null;
+    return gross * (1 - item.disc / 100);
   }
 
   function formatSubtotal(item) {
@@ -1560,12 +1703,12 @@
         <tr>
           <td class="td-code">${escHtml(item.code)}</td>
           <td class="td-desc">${renderDescHtml(item.desc)}</td>
-          <td class="td-right">${fmt(item.price)}</td>
-          <td class="td-num-sm">${formatSf(derived.totalSf)}</td>
-          <td class="td-num-sm">${formatPieces(item.pieces)}</td>
-          <td class="td-num-sm">${formatPallets(item.pallets)}</td>
-          <td class="td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>
-          <td class="td-right">${formatSubtotal(item)}</td>
+          <td class="td-num">${fmt(item.price)}</td>
+          <td class="td-num">${formatSf(derived.totalSf)}</td>
+          <td class="td-num">${formatPieces(item.pieces)}</td>
+          <td class="td-num">${formatPallets(item.pallets)}</td>
+          <td class="td-num td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>
+          <td class="td-num">${formatSubtotal(item)}</td>
         </tr>
       `);
     });
@@ -1576,10 +1719,10 @@
     let lineDiscount  = 0;
 
     items.forEach(item => {
-      if (!item.sfPerPallet || item.sfPerPallet <= 0) return;
-      const lineGross = item.price * item.sfPerPallet;
-      grossSubtotal += lineGross;
-      lineDiscount  += lineGross * (item.disc / 100);
+      const gross = calcLineGross(item);
+      if (gross == null) return;
+      grossSubtotal += gross;
+      lineDiscount  += gross * (item.disc / 100);
     });
 
     const netSubtotal = grossSubtotal - lineDiscount;
