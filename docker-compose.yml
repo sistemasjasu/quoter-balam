@@ -24,6 +24,8 @@ services:
       AUTH_PASS_HASH: ${AUTH_PASS_HASH:-2cfc7b57d427f0edd40c018ced8f63e99828f4752f5425950852585d35f0d41c}
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       PORT: 3000
+    ports:
+      - "127.0.0.1:${API_PORT:-3002}:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -33,7 +35,7 @@ services:
     build: .
     container_name: quotes-balamst
     ports:
-      - "${QUOTES_PORT:-8081}:80"
+      - "127.0.0.1:${QUOTES_PORT:-8081}:80"
     depends_on:
       - api
     restart: unless-stopped

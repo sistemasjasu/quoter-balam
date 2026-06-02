@@ -37,8 +37,8 @@ Servicios:
 
 | Servicio | Descripción |
 |----------|-------------|
-| `quotes` | Frontend nginx en `:8081` (host) |
-| `api` | API REST Node.js (interno) |
+| `quotes` | Frontend nginx en `127.0.0.1:8081` |
+| `api` | API REST Node.js en `127.0.0.1:3002` |
 | `db` | PostgreSQL 16 (volumen `pgdata`) |
 
 Visita `http://localhost:8081` e inicia sesión.
@@ -161,9 +161,13 @@ Verifica que responde en el servidor:
 curl -I http://127.0.0.1:8081/
 # Debe devolver HTTP/1.1 200 OK
 
+curl -s http://127.0.0.1:3002/api/health
+# Debe devolver: {"ok":true}  ← prueba directa de la API
+
 curl -s http://127.0.0.1:8081/api/health
-# Debe devolver: {"ok":true}
-# Si devuelve HTML, la API no está desplegada: revisa docker compose ps (db, api, quotes)
+# También debe devolver: {"ok":true}
+# Si devuelve HTML, reconstruye sin caché:
+#   docker compose down && docker compose build --no-cache && docker compose up -d
 ```
 
 Deben estar **3 contenedores** en ejecución:
@@ -191,9 +195,14 @@ sudo systemctl reload nginx
 Comprueba HTTP antes de SSL:
 
 ```bash
+curl -s http://quoter.balamst.com/api/health
+# Debe devolver: {"ok":true}
+
 curl -I http://quoter.balamst.com
 # Debe devolver HTTP/1.1 200 OK
 ```
+
+> El nginx del host debe incluir `location /api/` → `127.0.0.1:3002` (ver plantilla en `deploy/nginx-host.conf.example`). Si solo tienes `location /` → `8081`, `/api/health` devolverá HTML.
 
 ### 6. Certificado SSL (HTTPS)
 
@@ -229,6 +238,7 @@ cd /opt/quotes-balamst
 git pull
 docker compose up -d --build
 docker compose ps
+curl -s http://127.0.0.1:3002/api/health
 curl -s http://127.0.0.1:8081/api/health
 ```
 
@@ -257,7 +267,7 @@ Internet
 quoter.balamst.com :443 (nginx host + Let's Encrypt)
    │
    ▼
-127.0.0.1:8081 (Docker: quotes + api + db)
+127.0.0.1:8081 (frontend) + 127.0.0.1:3002 (API)
 ```
 
 ## Estructura del proyecto
