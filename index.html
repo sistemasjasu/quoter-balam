@@ -448,6 +448,49 @@
       cursor: pointer;
     }
 
+    .doc-col-panel {
+      width: 100%;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .doc-col-panel > .panel-label {
+      display: block;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .doc-col-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+
+    .doc-col-toggles label.checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .78rem;
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .doc-col-toggles label.checkbox-label input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--primary);
+      cursor: pointer;
+      margin: 0;
+    }
+
     /* ============================================================
        DOCUMENT (letter)
     ============================================================ */
@@ -709,6 +752,26 @@
     .doc-table col.col-subtotal,
     .doc-table thead th.col-subtotal { width: 74px; }
 
+    .doc-table.doc-table--spread-desc-price col.col-desc,
+    .doc-table.doc-table--spread-desc-price thead th.col-desc,
+    .doc-table.doc-table--spread-desc-price tbody td.td-desc {
+      width: auto;
+    }
+
+    .doc-table.doc-table--spread-desc-price col.col-unit-price,
+    .doc-table.doc-table--spread-desc-price thead th.col-unit-price,
+    .doc-table.doc-table--spread-desc-price tbody td.col-unit-price {
+      width: 78px;
+    }
+
+    .doc-table.doc-table--spread-desc-price thead th.col-unit-price {
+      padding-left: 12px;
+    }
+
+    .doc-table.doc-table--spread-desc-price tbody td.col-unit-price {
+      padding-left: 12px;
+    }
+
     .doc-table tbody tr {
       border-bottom: 1px solid var(--border-subtle);
     }
@@ -761,7 +824,7 @@
       padding: 5px 6px;
     }
 
-    .doc-table tbody tr td:nth-child(3).td-num {
+    .doc-table tbody td.col-unit-price {
       padding-left: 10px;
     }
 
@@ -966,7 +1029,7 @@
     <div class="form-grid">
       <div class="form-field">
         <label>Company name</label>
-        <input type="text" id="e-nombre" value="BALAM Studio LLC" oninput="syncField('company-name', this.value)" />
+        <input type="text" id="e-nombre" value="BALAM" oninput="syncField('company-name', this.value)" />
       </div>
       <div class="form-field">
         <label>Tagline</label>
@@ -990,19 +1053,21 @@
       </div>
       <div class="form-field full">
         <label>Location (header display)</label>
-        <input type="text" id="e-loc" value="Ky Biscayne, FL" oninput="rebuildCompanyInfo()" />
+        <textarea id="e-loc" rows="3" oninput="rebuildCompanyInfo()">50 W, Mastha Dr. Suite 4
+Miami, FL, 33149
+USA</textarea>
       </div>
       <div class="form-field">
         <label>Sales contact</label>
-        <input type="text" id="e-firma-nombre" value="Gonzalo Fernandez" oninput="rebuildSellerContact()" />
+        <input type="text" id="e-firma-nombre" value="" oninput="rebuildSellerContact()" />
       </div>
       <div class="form-field">
         <label>Contact title</label>
-        <input type="text" id="e-firma-title" value="Commercial Director" oninput="rebuildSellerContact()" />
+        <input type="text" id="e-firma-title" value="" oninput="rebuildSellerContact()" />
       </div>
       <div class="form-field">
         <label>Contact phone</label>
-        <input type="text" id="e-firma-tel" value="+1 (305) 555-0142" oninput="rebuildSellerContact()" />
+        <input type="text" id="e-firma-tel" value="" oninput="rebuildSellerContact()" />
       </div>
       <div class="form-field full">
         <label>Logo path (local file or URL)</label>
@@ -1053,7 +1118,7 @@ Palm Beach, FL 33480</textarea>
       </div>
       <div class="form-field">
         <label>Valid (days)</label>
-        <input type="number" id="c-validez" value="30" min="1" oninput="rebuildClientInfo()" />
+        <input type="number" id="c-validez" value="0" min="0" step="1" oninput="rebuildClientInfo()" />
       </div>
       <div class="form-field full">
         <label>Payment terms</label>
@@ -1097,6 +1162,10 @@ Palm Beach, FL 33480</textarea>
         </label>
       </div>
     </div>
+    <div class="doc-col-panel">
+      <span class="panel-label">Print table columns</span>
+      <div class="doc-col-toggles" id="doc-col-toggles"></div>
+    </div>
   </div>
 
   <!-- TAB NOTES -->
@@ -1119,16 +1188,16 @@ Palm Beach, FL 33480</textarea>
   <header class="doc-header">
     <div class="doc-header-top">
       <div class="company-brand">
-        <h2 id="company-name">BALAM Studio LLC</h2>
+        <h2 id="company-name">BALAM</h2>
         <p class="company-tagline" id="company-tagline">Premium Natural Stone</p>
-        <p class="company-details" id="company-details">sales@balamst.com · balamst.com<br>Ky Biscayne, FL</p>
+        <p class="company-details" id="company-details">sales@balamst.com · balamst.com<br>50 W, Mastha Dr. Suite 4<br>Miami, FL, 33149<br>USA</p>
       </div>
       <div class="doc-header-right">
         <img id="doc-logo" src="./logo.png" alt="Company logo" />
         <div id="logo-placeholder" class="logo-placeholder hidden">Logo</div>
       </div>
     </div>
-    <p class="seller-contact" id="seller-contact">Gonzalo Fernandez · Commercial Director<br>+1 (305) 555-0142</p>
+    <p class="seller-contact" id="seller-contact"></p>
   </header>
 
   <div class="doc-meta doc-meta--three-cols" id="doc-meta">
@@ -1151,7 +1220,6 @@ Palm Beach, FL 33480</textarea>
       <div id="quote-details">
         <div class="meta-line"><span>Quote</span><span id="quote-number">QUO-2026-0001</span></div>
         <div class="meta-line"><span>Date</span><span id="quote-date">-</span></div>
-        <div class="meta-line"><span>Expires</span><span id="quote-expires">-</span></div>
         <div class="meta-line"><span>Currency</span><span>USD</span></div>
         <div class="meta-line"><span>Payment</span><span id="quote-payment">50% deposit · balance before shipment</span></div>
       </div>
@@ -1159,28 +1227,10 @@ Palm Beach, FL 33480</textarea>
   </div>
 
   <div class="doc-table-wrap">
-    <table class="doc-table">
-      <colgroup>
-        <col class="col-code" />
-        <col class="col-desc" />
-        <col class="col-unit-price" />
-        <col class="col-total-sf" />
-        <col class="col-total-pcs" />
-        <col class="col-pallets" />
-        <col class="col-disc" />
-        <col class="col-subtotal" />
-      </colgroup>
+    <table class="doc-table doc-table--spread-desc-price">
+      <colgroup id="doc-colgroup"></colgroup>
       <thead>
-        <tr>
-          <th class="col-code">Code</th>
-          <th class="col-desc">Description</th>
-          <th class="col-num col-unit-price">Unit Price<span class="th-unit-sub">per SF</span></th>
-          <th class="col-num col-total-sf">Total SF</th>
-          <th class="col-num col-total-pcs">Total Pcs</th>
-          <th class="col-num col-pallets">Pallets</th>
-          <th class="col-num col-disc">Disc.</th>
-          <th class="col-num col-subtotal">Subtotal</th>
-        </tr>
+        <tr id="doc-thead-row"></tr>
       </thead>
       <tbody id="doc-tbody"></tbody>
     </table>
@@ -1238,6 +1288,113 @@ Palm Beach, FL 33480</textarea>
   let loadedQuoteCode = null;
   let savedQuoteCodes = [];
 
+  const DOC_COLUMNS = [
+    { key: 'code', label: 'Code', class: 'col-code', defaultVisible: false },
+    { key: 'desc', label: 'Description', class: 'col-desc', defaultVisible: true },
+    {
+      key: 'unitPrice',
+      label: 'Unit Price',
+      class: 'col-unit-price',
+      defaultVisible: true,
+      num: true,
+      labelHtml: 'Unit Price<span class="th-unit-sub">per SF</span>',
+    },
+    { key: 'totalSf', label: 'Total SF', class: 'col-total-sf', defaultVisible: false, num: true },
+    { key: 'totalPcs', label: 'Total Pcs', class: 'col-total-pcs', defaultVisible: false, num: true },
+    { key: 'pallets', label: 'Pallets', class: 'col-pallets', defaultVisible: false, num: true },
+    { key: 'disc', label: 'Disc.', class: 'col-disc', defaultVisible: false, num: true },
+    { key: 'subtotal', label: 'Subtotal', class: 'col-subtotal', defaultVisible: false, num: true },
+  ];
+
+  const docColVisibility = Object.fromEntries(
+    DOC_COLUMNS.map(c => [c.key, c.defaultVisible])
+  );
+
+  function isDocColVisible(key) {
+    return !!docColVisibility[key];
+  }
+
+  function getVisibleDocColumns() {
+    return DOC_COLUMNS.filter(c => isDocColVisible(c.key));
+  }
+
+  function syncDocColToggleUI() {
+    document.querySelectorAll('#doc-col-toggles input[data-col]').forEach(cb => {
+      cb.checked = isDocColVisible(cb.dataset.col);
+    });
+  }
+
+  function initDocColumnToggles() {
+    const container = document.getElementById('doc-col-toggles');
+    if (!container || container.dataset.ready) return;
+    container.innerHTML = DOC_COLUMNS.map(c => `
+      <label class="checkbox-label">
+        <input type="checkbox" data-col="${c.key}"
+               ${isDocColVisible(c.key) ? 'checked' : ''}
+               onchange="toggleDocColumn('${c.key}', this.checked)" />
+        ${c.label}
+      </label>
+    `).join('');
+    container.dataset.ready = '1';
+  }
+
+  function toggleDocColumn(key, checked) {
+    docColVisibility[key] = checked;
+    if (getVisibleDocColumns().length === 0) {
+      docColVisibility[key] = true;
+      syncDocColToggleUI();
+      return;
+    }
+    renderDocTableStructure();
+    renderDocRows();
+  }
+
+  function updateDocTableLayoutClass() {
+    const table = document.querySelector('.doc-table');
+    if (!table) return;
+    const keys = getVisibleDocColumns().map(c => c.key);
+    const spread = keys.length === 2 && keys[0] === 'desc' && keys[1] === 'unitPrice';
+    table.classList.toggle('doc-table--spread-desc-price', spread);
+  }
+
+  function renderDocTableStructure() {
+    const visible = getVisibleDocColumns();
+    const colgroup = document.getElementById('doc-colgroup');
+    const theadRow = document.getElementById('doc-thead-row');
+    if (!colgroup || !theadRow) return;
+
+    colgroup.innerHTML = visible.map(c => `<col class="${c.class}" />`).join('');
+    theadRow.innerHTML = visible.map(c => {
+      const numClass = c.num ? ' col-num' : '';
+      const label = c.labelHtml || escHtml(c.label);
+      return `<th class="${c.class}${numClass}">${label}</th>`;
+    }).join('');
+    updateDocTableLayoutClass();
+  }
+
+  function renderDocCellHtml(item, derived, col) {
+    switch (col.key) {
+      case 'code':
+        return `<td class="td-code">${escHtml(item.code)}</td>`;
+      case 'desc':
+        return `<td class="td-desc">${renderDescHtml(item.desc)}</td>`;
+      case 'unitPrice':
+        return `<td class="td-num col-unit-price">${fmt(item.price)}</td>`;
+      case 'totalSf':
+        return `<td class="td-num">${formatSf(derived.totalSf)}</td>`;
+      case 'totalPcs':
+        return `<td class="td-num">${formatPieces(item.pieces)}</td>`;
+      case 'pallets':
+        return `<td class="td-num">${formatPallets(item.pallets)}</td>`;
+      case 'disc':
+        return `<td class="td-num td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>`;
+      case 'subtotal':
+        return `<td class="td-num">${formatSubtotal(item)}</td>`;
+      default:
+        return '';
+    }
+  }
+
   async function hashText(text) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -1280,6 +1437,7 @@ Palm Beach, FL 33480</textarea>
     return {
       fields,
       showTotals: document.getElementById('show-totals').checked,
+      docColVisibility: { ...docColVisibility },
       items: items.map(item => {
         const clean = { ...item };
         delete clean._priceDraft;
@@ -1297,6 +1455,10 @@ Palm Beach, FL 33480</textarea>
       el.value = fields[id];
     });
     document.getElementById('show-totals').checked = !!state.showTotals;
+    if (state.docColVisibility) {
+      Object.assign(docColVisibility, state.docColVisibility);
+      syncDocColToggleUI();
+    }
     items = (state.items || []).map(normalizeItem);
     loadedQuoteCode = String(fields['c-num'] || '').trim() || null;
 
@@ -1306,6 +1468,8 @@ Palm Beach, FL 33480</textarea>
     updateQuoteRef();
     updateLogo(document.getElementById('logo-path').value);
     syncField('doc-notes-text', document.getElementById('notas-text').value);
+    initDocColumnToggles();
+    renderDocTableStructure();
     renderEditorRows();
     renderDocRows();
     recalcTotals();
@@ -1493,6 +1657,8 @@ Palm Beach, FL 33480</textarea>
       rebuildClientInfo();
       updateQuoteRef();
       updateLogo(document.getElementById('logo-path').value);
+      initDocColumnToggles();
+      renderDocTableStructure();
       renderEditorRows();
       renderDocRows();
       recalcTotals();
@@ -1588,14 +1754,15 @@ Palm Beach, FL 33480</textarea>
     const tel   = document.getElementById('e-tel').value.trim();
     const email = document.getElementById('e-email').value.trim();
     const web   = document.getElementById('e-web').value.trim();
-    const loc   = document.getElementById('e-loc').value.trim();
+    const loc   = document.getElementById('e-loc').value;
     const taxId = document.getElementById('e-rfc').value.trim();
 
     const contactLine = [tel, email, web].filter(Boolean).map(escHtml).join(' · ');
     const lines = [];
     if (contactLine) lines.push(contactLine);
     if (taxId) lines.push(`Tax ID ${escHtml(taxId)}`);
-    if (loc) lines.push(escHtml(loc));
+    const locHtml = formatShipTo(loc);
+    if (locHtml) lines.push(locHtml);
 
     document.getElementById('company-details').innerHTML = lines.join('<br>');
 
@@ -1619,6 +1786,11 @@ Palm Beach, FL 33480</textarea>
     return lines.join('<br>');
   }
 
+  function hasValidityDays(validDays) {
+    const days = parseInt(String(validDays ?? '').trim(), 10);
+    return !isNaN(days) && days > 0;
+  }
+
   function rebuildClientInfo() {
     const empresa  = document.getElementById('c-empresa').value;
     const contacto = document.getElementById('c-contacto').value;
@@ -1636,10 +1808,14 @@ Palm Beach, FL 33480</textarea>
     document.getElementById('ship-to-info').innerHTML = formatShipTo(shipTo);
     updateShipToLayout(shipTo);
 
+    const expiresLine = hasValidityDays(validez)
+      ? `<div class="meta-line"><span>Expires</span><span id="quote-expires">${computeExpirationDate(fecha, validez)}</span></div>`
+      : '';
+
     document.getElementById('quote-details').innerHTML =
       `<div class="meta-line"><span>Quote</span><span id="quote-number">${escHtml(document.getElementById('c-num').value)}</span></div>` +
       `<div class="meta-line"><span>Date</span><span id="quote-date">${formatDate(fecha)}</span></div>` +
-      `<div class="meta-line"><span>Expires</span><span id="quote-expires">${computeExpirationDate(fecha, validez)}</span></div>` +
+      expiresLine +
       `<div class="meta-line"><span>Currency</span><span>USD</span></div>` +
       `<div class="meta-line"><span>Payment</span><span id="quote-payment">${payment ? escHtml(payment) : '—'}</span></div>`;
   }
@@ -1966,26 +2142,19 @@ Palm Beach, FL 33480</textarea>
   }
 
   function renderDocRows() {
+    renderDocTableStructure();
     const tbody = document.getElementById('doc-tbody');
+    const visible = getVisibleDocColumns();
+    const colCount = visible.length || 1;
     if (items.length === 0) {
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No items added</td></tr>`;
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${colCount}">No items added</td></tr>`;
       return;
     }
     tbody.innerHTML = '';
     items.forEach(item => {
       const derived = calcItemDerived(item);
-      tbody.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td class="td-code">${escHtml(item.code)}</td>
-          <td class="td-desc">${renderDescHtml(item.desc)}</td>
-          <td class="td-num">${fmt(item.price)}</td>
-          <td class="td-num">${formatSf(derived.totalSf)}</td>
-          <td class="td-num">${formatPieces(item.pieces)}</td>
-          <td class="td-num">${formatPallets(item.pallets)}</td>
-          <td class="td-num td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>
-          <td class="td-num">${formatSubtotal(item)}</td>
-        </tr>
-      `);
+      const cells = visible.map(col => renderDocCellHtml(item, derived, col)).join('');
+      tbody.insertAdjacentHTML('beforeend', `<tr>${cells}</tr>`);
     });
   }
 
