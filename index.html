@@ -26,8 +26,10 @@
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body:    'Inter', 'Segoe UI', system-ui, sans-serif;
 
-      --print-width:  216mm;
-      --print-height: 279mm;
+      --print-width:  8.5in;
+      --print-height: 11in;
+      --page-margin-y: 14mm;
+      --page-margin-x: 18mm;
     }
 
     /* ============================================================
@@ -310,6 +312,10 @@
       background: var(--bg-soft);
       border-radius: 3px;
     }
+    #items-editor td input.input-decimal {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
     #items-editor td input:focus { border-color: var(--secondary); background: var(--white); outline: none; }
     .col-code    { width: 90px; }
     .col-desc    { min-width: 180px; }
@@ -414,8 +420,9 @@
     #quote-document {
       width: var(--print-width);
       min-height: var(--print-height);
+      box-sizing: border-box;
       background: var(--white);
-      padding: 18mm 20mm 16mm;
+      padding: var(--page-margin-y) var(--page-margin-x);
       box-shadow: 0 2px 24px rgba(46, 42, 38, 0.07);
       position: relative;
       z-index: 0;
@@ -425,8 +432,8 @@
 
     /* --- HEADER --- */
     .doc-header {
-      margin-bottom: 10mm;
-      padding-bottom: 8mm;
+      margin-bottom: 8mm;
+      padding-bottom: 6mm;
       border-bottom: 1px solid var(--border);
     }
 
@@ -508,7 +515,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0;
-      margin-bottom: 8mm;
+      margin-bottom: 6mm;
     }
 
     .meta-block {
@@ -567,7 +574,7 @@
     .doc-table-wrap { margin-bottom: 0; }
 
     .doc-closing {
-      margin-top: 6mm;
+      margin-top: 4mm;
     }
 
     .doc-table {
@@ -576,7 +583,7 @@
     }
 
     .doc-table thead th {
-      padding: 10px 4px 8px;
+      padding: 6px 4px 5px;
       font-size: .6rem;
       font-weight: 600;
       text-transform: uppercase;
@@ -593,7 +600,7 @@
     }
 
     .doc-table tbody td {
-      padding: 10px 4px;
+      padding: 6px 4px;
       font-size: .75rem;
       color: var(--text);
       vertical-align: top;
@@ -611,7 +618,7 @@
       width: 88px;
       min-width: 88px;
       white-space: nowrap;
-      padding-top: 12px;
+      padding-top: 7px;
     }
 
     .doc-table tbody td.td-desc .desc-name {
@@ -669,7 +676,6 @@
       max-width: 250px;
       margin-top: 0;
       margin-bottom: 0;
-      page-break-inside: avoid;
     }
 
     .totals-block.is-hidden {
@@ -729,8 +735,7 @@
 
     /* --- NOTES --- */
     .doc-notes {
-      padding-top: 4mm;
-      page-break-inside: avoid;
+      padding-top: 3mm;
     }
 
     .doc-notes p {
@@ -741,26 +746,41 @@
     }
 
     /* ============================================================
-       PRINT
+       PRINT — same box model as screen preview
     ============================================================ */
     @media print {
       @page {
         size: letter portrait;
-        margin: 14mm 18mm;
+        margin: 0;
       }
-      body {
-        background: none;
+      html, body {
+        width: var(--print-width);
+        height: auto;
+        margin: 0;
         padding: 0;
+        background: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body.app-ready {
         display: block;
+        padding: 0;
+      }
+      #app-shell {
+        display: block;
+        width: auto;
+        align-items: stretch;
       }
       #toolbar, #editor-panel { display: none !important; }
       #login-screen { display: none !important; }
       #quote-document {
-        box-shadow: none;
-        width: 100%;
+        width: var(--print-width);
         min-height: auto;
-        padding: 0;
+        margin: 0;
+        padding: var(--page-margin-y) var(--page-margin-x);
+        box-shadow: none;
         display: block;
+        box-sizing: border-box;
       }
       .doc-header,
       .doc-meta {
@@ -771,15 +791,10 @@
         display: table-header-group;
       }
       .doc-table tbody tr {
-        break-inside: avoid;
-        page-break-inside: avoid;
+        break-inside: auto;
+        page-break-inside: auto;
       }
-      .doc-closing {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-      .totals-block,
-      .doc-notes {
+      .totals-block {
         break-inside: avoid;
         page-break-inside: avoid;
       }
@@ -1147,14 +1162,14 @@
   });
 
   const defaultItems = [
-    { code: 'TRV-IC-HN-48', desc: 'Travertine Ivory Cream Honed Cross Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',       price: 13.67, pieces: 267, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
-    { code: 'TRV-IC-PL-36', desc: 'Travertine Ivory Cream Polished Cross Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.64, pieces: 473, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
-    { code: 'TRV-IC-LR-24', desc: 'Travertine Ivory Cream Leather Cross Cut, 24" x 48" x 3/4" · 0.7 SF/PC · SF/Pallet 400',  price: 12.49, pieces: 572, disc: 0, widthIn: 24, lengthIn: 48, sfPerPallet: 400 },
-    { code: 'TRV-IC-PL-18', desc: 'Travertine Ivory Cream Polished Cross Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360', price: 11.94, pieces: 901, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
-    { code: 'TRV-XB-HN-48', desc: 'Travertine Xalapa Beige Honed Vein Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',    price: 13.79, pieces: 267, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
-    { code: 'TRV-XB-PL-36', desc: 'Travertine Xalapa Beige Polished Vein Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.57, pieces: 473, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
-    { code: 'TRV-XB-LR-24', desc: 'Travertine Xalapa Beige Leather Vein Cut, 24" x 36" x 3/4" · 0.6 SF/PC · SF/Pallet 360', price: 11.85, pieces: 600, disc: 0, widthIn: 24, lengthIn: 36, sfPerPallet: 360 },
-    { code: 'TRV-XB-HN-18', desc: 'Travertine Xalapa Beige Honed Vein Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360',    price: 11.94, pieces: 901, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
+    { code: 'TRV-IC-HN-48', desc: 'Travertine Ivory Cream Honed Cross Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',       price: 13.67, pieces: 267, pallets: 11, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-IC-PL-36', desc: 'Travertine Ivory Cream Polished Cross Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.64, pieces: 473, pallets: 11, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
+    { code: 'TRV-IC-LR-24', desc: 'Travertine Ivory Cream Leather Cross Cut, 24" x 48" x 3/4" · 0.7 SF/PC · SF/Pallet 400',  price: 12.49, pieces: 572, pallets: 11, disc: 0, widthIn: 24, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-IC-PL-18', desc: 'Travertine Ivory Cream Polished Cross Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360', price: 11.94, pieces: 901, pallets: 11, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
+    { code: 'TRV-XB-HN-48', desc: 'Travertine Xalapa Beige Honed Vein Cut, 48" x 48" x 3/4" · 1.5 SF/PC · SF/Pallet 400',    price: 13.79, pieces: 267, pallets: 11, disc: 0, widthIn: 48, lengthIn: 48, sfPerPallet: 400 },
+    { code: 'TRV-XB-PL-36', desc: 'Travertine Xalapa Beige Polished Vein Cut, 36" x 36" x 3/4" · 0.8 SF/PC · SF/Pallet 378', price: 12.57, pieces: 473, pallets: 11, disc: 0, widthIn: 36, lengthIn: 36, sfPerPallet: 378 },
+    { code: 'TRV-XB-LR-24', desc: 'Travertine Xalapa Beige Leather Vein Cut, 24" x 36" x 3/4" · 0.6 SF/PC · SF/Pallet 360', price: 11.85, pieces: 600, pallets: 10, disc: 0, widthIn: 24, lengthIn: 36, sfPerPallet: 360 },
+    { code: 'TRV-XB-HN-18', desc: 'Travertine Xalapa Beige Honed Vein Cut, 18" x 36" x 3/4" · 0.4 SF/PC · SF/Pallet 360',    price: 11.94, pieces: 901, pallets: 11, disc: 0, widthIn: 18, lengthIn: 36, sfPerPallet: 360 },
   ];
 
   let items = defaultItems.map(normalizeItem);
@@ -1328,75 +1343,48 @@
 
   function normalizeItem(raw) {
     const catalog = raw.desc ? parseLegacyCatalog(raw.desc) : {};
-    const item = {
+    return {
       code: raw.code || '',
       desc: raw.desc ? cleanDesc(raw.desc) : '',
-      price: raw.price || 0,
+      price: raw.price ?? 0,
       pieces: raw.pieces ?? 0,
+      pallets: raw.pallets ?? 0,
       disc: raw.disc || 0,
       kind: raw.kind || catalog.kind || 'tile',
       widthIn: raw.widthIn ?? catalog.widthIn ?? 0,
       lengthIn: raw.lengthIn ?? catalog.lengthIn ?? 0,
       sfPerPallet: raw.sfPerPallet ?? catalog.sfPerPallet ?? 400,
-      lastEdited: raw.lastEdited || 'pieces',
     };
-    syncItemQuantities(item);
-    return item;
   }
 
   function calcSfPerPiece(widthIn, lengthIn) {
-    if (!widthIn || !lengthIn) return 0;
+    if (!widthIn || !lengthIn) return null;
     return (widthIn * lengthIn) / 144;
   }
 
-  function canCalcSf(item) {
-    return item.widthIn > 0 && item.lengthIn > 0 && item.pieces > 0;
-  }
-
-  function calcCoverageSf(item) {
-    if (!canCalcSf(item)) return null;
-    return (item.widthIn * item.lengthIn * item.pieces) / 144;
+  function calcTotalSf(item) {
+    const pallets = Number(item.pallets) || 0;
+    const sfPerPallet = Number(item.sfPerPallet) || 0;
+    if (!pallets || !sfPerPallet) return null;
+    return sfPerPallet * pallets;
   }
 
   function calcItemDerived(item) {
-    const sfPerPiece = calcSfPerPiece(item.widthIn, item.lengthIn);
-    const coverageSf = calcCoverageSf(item);
-    const pieces = item.pieces || 0;
-
-    let pallets = null;
-    if (coverageSf != null && item.sfPerPallet > 0) {
-      pallets = coverageSf / item.sfPerPallet;
-    }
-
     return {
-      sfPerPiece,
-      pieces,
-      pallets,
-      coverageSf,
-      valid: coverageSf != null,
+      sfPerPiece: calcSfPerPiece(Number(item.widthIn), Number(item.lengthIn)),
+      totalSf: calcTotalSf(item),
     };
-  }
-
-  function syncItemQuantities(item) {
-    if (item.lastEdited === 'pallets') {
-      if (!item.sfPerPallet || item.pallets == null) return;
-      const targetSf = item.pallets * item.sfPerPallet;
-      if (item.widthIn > 0 && item.lengthIn > 0) {
-        item.pieces = Math.round((targetSf * 144) / (item.widthIn * item.lengthIn));
-      }
-    }
   }
 
   function formatSf(n) {
     if (n == null || isNaN(n)) return '-';
     if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
-    return parseFloat(n.toFixed(1)).toString();
+    return parseFloat(n.toFixed(2)).toString();
   }
 
   function formatPallets(n) {
-    if (n == null || isNaN(n)) return '-';
+    if (n == null || isNaN(n) || n <= 0) return '-';
     const rounded = Math.round(n * 100) / 100;
-    if (rounded === 0) return '-';
     return Number.isInteger(rounded) ? String(rounded) : String(rounded);
   }
 
@@ -1406,14 +1394,72 @@
   }
 
   function lineSubtotal(item) {
-    const sf = calcCoverageSf(item);
-    if (sf == null) return null;
-    return item.price * sf * (1 - item.disc / 100);
+    if (!item.sfPerPallet || item.sfPerPallet <= 0) return null;
+    return item.price * item.sfPerPallet * (1 - item.disc / 100);
   }
 
   function formatSubtotal(item) {
     const sub = lineSubtotal(item);
     return sub == null ? '-' : fmt(sub);
+  }
+
+  function parseNumField(value) {
+    if (value === '' || value == null) return 0;
+    const n = parseFloat(String(value).replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function isPartialDecimal(value) {
+    return value === '' || /^\d*\.?\d*$/.test(value);
+  }
+
+  function priceInputValue(item) {
+    if (item._priceDraft != null) return item._priceDraft;
+    return item.price ? String(item.price) : '';
+  }
+
+  function syncPriceField(i, value) {
+    if (!isPartialDecimal(value)) return;
+    const item = items[i];
+    item._priceDraft = value;
+    if (value !== '' && value !== '.' && !value.endsWith('.')) {
+      item.price = parseNumField(value);
+    }
+    renderDocRows();
+    recalcTotals();
+  }
+
+  function commitPriceField(i, value) {
+    const item = items[i];
+    item.price = parseNumField(value);
+    delete item._priceDraft;
+    renderDocRows();
+    recalcTotals();
+  }
+
+  function updateEditorSubtotals() {
+    items.forEach((item, i) => {
+      const row = document.getElementById(`erow-${i}`);
+      if (!row) return;
+      const subCell = row.querySelector('.col-sub');
+      if (subCell) subCell.textContent = formatSubtotal(item);
+    });
+  }
+
+  function updateEditorDerivedFields() {
+    items.forEach((item, i) => {
+      const derived = calcItemDerived(item);
+      const subRow = document.getElementById(`erow-sub-${i}`);
+      if (!subRow) return;
+      const sfEl = subRow.querySelector('[data-field="total-sf"]');
+      const sfPcEl = subRow.querySelector('[data-field="sf-pc"]');
+      if (sfEl) sfEl.textContent = formatSf(derived.totalSf);
+      if (sfPcEl) {
+        sfPcEl.textContent = derived.sfPerPiece != null
+          ? derived.sfPerPiece.toFixed(2)
+          : '-';
+      }
+    });
   }
 
   function fmt(n) {
@@ -1424,9 +1470,7 @@
     const tbody = document.getElementById('items-tbody');
     tbody.innerHTML = '';
     items.forEach((item, i) => {
-      syncItemQuantities(item);
       const derived = calcItemDerived(item);
-      const sfClass = derived.valid ? '' : ' calc-pending';
       tbody.insertAdjacentHTML('beforeend', `
         <tr id="erow-${i}">
           <td class="col-code">
@@ -1438,16 +1482,18 @@
                    oninput="syncItemField(${i},'desc',this.value)" />
           </td>
           <td class="col-price">
-            <input type="number" value="${item.price}" min="0" step="0.01"
-                   oninput="syncItemField(${i},'price',parseFloat(this.value)||0)" />
+            <input type="text" inputmode="decimal" class="input-decimal"
+                   value="${escHtml(priceInputValue(item))}"
+                   oninput="syncPriceField(${i}, this.value)"
+                   onblur="commitPriceField(${i}, this.value)" />
           </td>
           <td class="col-qty">
             <input type="number" value="${item.pieces || ''}" min="0" step="1"
-                   oninput="syncItemField(${i},'pieces',parseFloat(this.value)||0)" />
+                   oninput="syncItemField(${i},'pieces',this.value)" />
           </td>
           <td class="col-disc">
             <input type="number" value="${item.disc}" min="0" max="100" step="0.1"
-                   oninput="syncItemField(${i},'disc',parseFloat(this.value)||0)" />
+                   oninput="syncItemField(${i},'disc',this.value)" />
           </td>
           <td class="col-sub" style="text-align:right; font-size:.78rem; color:var(--primary);">
             ${formatSubtotal(item)}
@@ -1469,30 +1515,30 @@
               <div class="sub-field">
                 <label>Width (in)</label>
                 <input type="number" value="${item.widthIn || ''}" min="0" step="0.1"
-                       oninput="syncItemField(${i},'widthIn',parseFloat(this.value)||0)" />
+                       oninput="syncItemField(${i},'widthIn',this.value)" />
               </div>
               <div class="sub-field">
                 <label>Length (in)</label>
                 <input type="number" value="${item.lengthIn || ''}" min="0" step="0.1"
-                       oninput="syncItemField(${i},'lengthIn',parseFloat(this.value)||0)" />
+                       oninput="syncItemField(${i},'lengthIn',this.value)" />
               </div>
               <div class="sub-field">
                 <label>SF/Pallet</label>
-                <input type="number" value="${item.sfPerPallet}" min="0" step="1"
-                       oninput="syncItemField(${i},'sfPerPallet',parseFloat(this.value)||0)" />
+                <input type="number" value="${item.sfPerPallet}" min="0" step="0.01"
+                       oninput="syncItemField(${i},'sfPerPallet',this.value)" />
               </div>
               <div class="sub-field">
                 <label>Pallets</label>
-                <input type="number" value="${derived.pallets != null ? formatPallets(derived.pallets) : ''}" min="0" step="0.01"
-                       oninput="syncItemField(${i},'pallets',parseFloat(this.value)||0)" />
+                <input type="number" value="${item.pallets || ''}" min="0" step="0.01"
+                       oninput="syncItemField(${i},'pallets',this.value)" />
               </div>
               <div class="sub-field">
                 <label>SF</label>
-                <span class="sub-readonly${sfClass}">${formatSf(derived.coverageSf)}</span>
+                <span class="sub-readonly" data-field="total-sf">${formatSf(derived.totalSf)}</span>
               </div>
               <div class="sub-field">
                 <label>SF/PC</label>
-                <span class="sub-readonly${derived.sfPerPiece > 0 ? '' : ' calc-pending'}">${derived.sfPerPiece > 0 ? derived.sfPerPiece.toFixed(2) : '-'}</span>
+                <span class="sub-readonly" data-field="sf-pc">${derived.sfPerPiece != null ? derived.sfPerPiece.toFixed(2) : '-'}</span>
               </div>
             </div>
           </td>
@@ -1509,19 +1555,17 @@
     }
     tbody.innerHTML = '';
     items.forEach(item => {
-      syncItemQuantities(item);
       const derived = calcItemDerived(item);
-      const pending = derived.valid ? '' : ' td-pending';
       tbody.insertAdjacentHTML('beforeend', `
         <tr>
           <td class="td-code">${escHtml(item.code)}</td>
           <td class="td-desc">${renderDescHtml(item.desc)}</td>
           <td class="td-right">${fmt(item.price)}</td>
-          <td class="td-num-sm${pending}">${formatSf(derived.coverageSf)}</td>
-          <td class="td-num-sm${pending}">${formatPieces(derived.pieces)}</td>
-          <td class="td-num-sm${pending}">${formatPallets(derived.pallets)}</td>
+          <td class="td-num-sm">${formatSf(derived.totalSf)}</td>
+          <td class="td-num-sm">${formatPieces(item.pieces)}</td>
+          <td class="td-num-sm">${formatPallets(item.pallets)}</td>
           <td class="td-disc">${item.disc > 0 ? item.disc.toFixed(1) + '%' : '-'}</td>
-          <td class="td-right${pending}">${formatSubtotal(item)}</td>
+          <td class="td-right">${formatSubtotal(item)}</td>
         </tr>
       `);
     });
@@ -1532,9 +1576,8 @@
     let lineDiscount  = 0;
 
     items.forEach(item => {
-      const sf = calcCoverageSf(item);
-      if (sf == null) return;
-      const lineGross = item.price * sf;
+      if (!item.sfPerPallet || item.sfPerPallet <= 0) return;
+      const lineGross = item.price * item.sfPerPallet;
       grossSubtotal += lineGross;
       lineDiscount  += lineGross * (item.disc / 100);
     });
@@ -1574,7 +1617,8 @@
       shipRow.style.display = 'none';
     }
 
-    renderEditorRows();
+    updateEditorSubtotals();
+    updateEditorDerivedFields();
   }
 
   function addItem() {
@@ -1583,6 +1627,7 @@
       desc: '',
       price: 0,
       pieces: 0,
+      pallets: 0,
       disc: 0,
       kind: 'tile',
       widthIn: 0,
@@ -1603,13 +1648,12 @@
 
   function syncItemField(i, field, value) {
     const item = items[i];
-    item[field] = value;
+    const numericFields = ['pieces', 'pallets', 'disc', 'widthIn', 'lengthIn', 'sfPerPallet'];
 
-    if (field === 'pieces' || field === 'widthIn' || field === 'lengthIn') {
-      item.lastEdited = 'pieces';
-    } else if (field === 'pallets') {
-      item.lastEdited = 'pallets';
-      syncItemQuantities(item);
+    if (numericFields.includes(field)) {
+      item[field] = parseNumField(value);
+    } else {
+      item[field] = value;
     }
 
     renderDocRows();
