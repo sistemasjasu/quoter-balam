@@ -1,7 +1,42 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: quotes-db
+    environment:
+      POSTGRES_DB: quotes
+      POSTGRES_USER: quotes
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quotes_secret}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quotes -d quotes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build: ./server
+    container_name: quotes-api
+    environment:
+      DATABASE_URL: postgres://quotes:${POSTGRES_PASSWORD:-quotes_secret}@db:5432/quotes
+      AUTH_EMAIL: ${AUTH_EMAIL:-aandrade@balamst.com}
+      AUTH_PASS_HASH: ${AUTH_PASS_HASH:-2cfc7b57d427f0edd40c018ced8f63e99828f4752f5425950852585d35f0d41c}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
   quotes:
     build: .
     container_name: quotes-balamst
     ports:
       - "8080:80"
+    depends_on:
+      - api
     restart: unless-stopped
+
+volumes:
+  pgdata:

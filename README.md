@@ -9,22 +9,45 @@ Editor de cotizaciones en HTML para piedra natural (travertino). Un solo archivo
 - Cálculo de SF por línea: `(ancho × largo × piezas) / 144`
 - Columnas de piezas, pallets y subtotales por ítem
 - Totales generales opcionales (ocultos por defecto)
-- Despliegue con Docker + nginx
+- **Persistencia en PostgreSQL**: guardar y cargar cotizaciones por código
+- Despliegue con Docker + nginx + API Node.js + PostgreSQL
 - Pantalla de login integrada (email + contraseña)
 
 ## Inicio rápido
 
 ### Opción 1: Abrir localmente
 
-Abre `index.html` en el navegador. Verás la pantalla de **Sign in** antes de acceder al editor.
+Abre `index.html` en el navegador solo para revisar el diseño. **Guardar y cargar cotizaciones requiere Docker** (API + PostgreSQL).
 
-### Opción 2: Docker
+### Opción 2: Docker (recomendado)
+
+Copia las variables de entorno (opcional):
+
+```bash
+cp .env.example .env
+```
+
+Levanta la app con base de datos:
 
 ```bash
 docker compose up -d --build
 ```
 
+Servicios:
+
+| Servicio | Descripción |
+|----------|-------------|
+| `quotes` | Frontend nginx en `:8080` |
+| `api` | API REST Node.js (interno) |
+| `db` | PostgreSQL 16 (volumen `pgdata`) |
+
 Visita `http://localhost:8080` e inicia sesión.
+
+**Guardar / cargar cotizaciones**
+
+- **Save** — guarda con el código actual (`Quote number`). Si la cotización fue cargada desde la lista, actualiza la misma.
+- **Save as…** — pide un código nuevo y crea (o sobrescribe, con confirmación) otra cotización.
+- **Load saved quote…** — lista desplegable con todos los códigos guardados; al seleccionar uno se precargan todos los campos.
 
 **Credenciales por defecto:**
 
@@ -41,7 +64,15 @@ Para detener:
 docker compose down
 ```
 
+Para detener y borrar los datos de cotizaciones:
+
+```bash
+docker compose down -v
+```
+
 ### Cambiar la contraseña
+
+La contraseña debe coincidir en el frontend (`index.html` → `AUTH`) y en el API (`AUTH_PASS_HASH` en `.env` o `docker-compose.yml`).
 
 1. Genera el hash SHA-256 de la nueva contraseña:
 
