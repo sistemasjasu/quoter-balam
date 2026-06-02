@@ -1440,15 +1440,27 @@ Palm Beach, FL 33480</textarea>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass }),
       });
+      const contentType = res.headers.get('content-type') || '';
       if (!res.ok) {
         document.getElementById('login-error').hidden = false;
         return;
+      }
+      if (!contentType.includes('application/json')) {
+        throw new Error('API returned non-JSON response');
       }
       const { token } = await res.json();
       sessionStorage.setItem(TOKEN_KEY, token);
     } catch (err) {
       console.error(err);
-      alert('Could not connect to the quote server. Make sure the API and database are running.');
+      alert(
+        'Could not connect to the quote server.\n\n' +
+        'On the server run:\n' +
+        '  git pull\n' +
+        '  docker compose up -d --build\n\n' +
+        'Then verify:\n' +
+        '  curl -s http://127.0.0.1:8080/api/health\n' +
+        'Should return: {"ok":true}'
+      );
       return;
     }
 

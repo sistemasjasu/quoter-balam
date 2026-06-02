@@ -160,6 +160,17 @@ Verifica que responde en el servidor:
 ```bash
 curl -I http://127.0.0.1:8080/
 # Debe devolver HTTP/1.1 200 OK
+
+curl -s http://127.0.0.1:8080/api/health
+# Debe devolver: {"ok":true}
+# Si devuelve HTML, la API no está desplegada: revisa docker compose ps (db, api, quotes)
+```
+
+Deben estar **3 contenedores** en ejecución:
+
+```bash
+docker compose ps
+# quotes-db, quotes-api, quotes-balamst → Up
 ```
 
 ### 5. Configurar nginx en el host (reverse proxy)
@@ -217,6 +228,8 @@ Cuando subas cambios al repositorio:
 cd /opt/quotes-balamst
 git pull
 docker compose up -d --build
+docker compose ps
+curl -s http://127.0.0.1:8080/api/health
 ```
 
 ### 9. Comandos útiles
