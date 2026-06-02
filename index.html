@@ -321,6 +321,7 @@
     #items-editor { overflow-x: auto; }
     #items-editor table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       font-size: .82rem;
     }
@@ -351,8 +352,8 @@
       font-variant-numeric: tabular-nums;
     }
     #items-editor td input:focus { border-color: var(--secondary); background: var(--white); outline: none; }
-    .col-code    { width: 90px; }
-    .col-desc    { min-width: 180px; }
+    .col-code    { width: 8.75rem; min-width: 8.75rem; }
+    .col-desc    { width: auto; min-width: 10rem; }
     .col-price   { width: 90px; }
     .col-qty     { width: 70px; }
     .col-disc    { width: 70px; }
@@ -366,14 +367,15 @@
     }
     .editor-sub-fields {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px 14px;
+      flex-wrap: nowrap;
+      gap: 4px 10px;
       align-items: center;
     }
     .editor-sub-fields .sub-field {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
+      flex: 0 0 auto;
     }
     .editor-sub-fields label {
       font-size: .62rem;
@@ -382,18 +384,24 @@
       letter-spacing: .03em;
       white-space: nowrap;
     }
-    .editor-sub-fields input,
-    .editor-sub-fields select {
-      width: 68px;
+    #items-editor .editor-sub-fields input,
+    #items-editor .editor-sub-fields select {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      flex: 0 0 auto;
       border: 1px solid var(--border);
-      padding: 4px 6px;
+      padding: 4px 5px;
       font-family: var(--font-body);
       font-size: .78rem;
       color: var(--text);
       background: var(--white);
       border-radius: 3px;
+      box-sizing: border-box;
     }
-    .editor-sub-fields select { width: 72px; }
+    #items-editor .editor-sub-fields select { width: 4.5rem; }
+    #items-editor .editor-sub-fields input[type="number"] { width: 3.25rem; }
+    #items-editor .editor-sub-fields .sub-field--sf-pallet input { width: 3.75rem; }
     .editor-sub-fields .sub-readonly {
       font-size: .78rem;
       font-weight: 500;
@@ -2192,7 +2200,7 @@ Palm Beach, FL 33480</textarea>
                 <input type="number" value="${item.lengthIn || ''}" min="0" step="0.1"
                        oninput="syncItemField(${i},'lengthIn',this.value)" />
               </div>
-              <div class="sub-field">
+              <div class="sub-field sub-field--sf-pallet">
                 <label>SF/Pallet</label>
                 <input type="number" value="${item.sfPerPallet}" min="0" step="0.01"
                        oninput="syncItemField(${i},'sfPerPallet',this.value)" />
