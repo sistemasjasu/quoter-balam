@@ -38,7 +38,7 @@ Servicios:
 | Servicio | Descripción |
 |----------|-------------|
 | `quotes` | Frontend nginx en `127.0.0.1:8081` |
-| `api` | API REST Node.js en `127.0.0.1:3002` |
+| `api` | API REST Node.js en `127.0.0.1:8082` |
 | `db` | PostgreSQL 16 (volumen `pgdata`) |
 
 Visita `http://localhost:8081` e inicia sesión.
@@ -161,7 +161,7 @@ Verifica que responde en el servidor:
 curl -I http://127.0.0.1:8081/
 # Debe devolver HTTP/1.1 200 OK
 
-curl -s http://127.0.0.1:3002/api/health
+curl -s http://127.0.0.1:8082/api/health
 # Debe devolver: {"ok":true}  ← prueba directa de la API
 
 curl -s http://127.0.0.1:8081/api/health
@@ -202,7 +202,7 @@ curl -I http://quoter.balamst.com
 # Debe devolver HTTP/1.1 200 OK
 ```
 
-> El nginx del host debe incluir `location /api/` → `127.0.0.1:3002` (ver plantilla en `deploy/nginx-host.conf.example`). Si solo tienes `location /` → `8081`, `/api/health` devolverá HTML.
+> El nginx del host debe incluir `location /api/` → `127.0.0.1:8082` (ver plantilla en `deploy/nginx-host.conf.example`). Si solo tienes `location /` → `8081`, `/api/health` devolverá HTML.
 
 ### 6. Certificado SSL (HTTPS)
 
@@ -238,7 +238,7 @@ cd /opt/quotes-balamst
 git pull
 docker compose up -d --build
 docker compose ps
-curl -s http://127.0.0.1:3002/api/health
+curl -s http://127.0.0.1:8082/api/health
 curl -s http://127.0.0.1:8081/api/health
 ```
 
@@ -267,7 +267,7 @@ Internet
 quoter.balamst.com :443 (nginx host + Let's Encrypt)
    │
    ▼
-127.0.0.1:8081 (frontend) + 127.0.0.1:3002 (API)
+127.0.0.1:8081 (frontend) + 127.0.0.1:8082 (API)
 ```
 
 ## Estructura del proyecto

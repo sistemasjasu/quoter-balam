@@ -4,7 +4,7 @@
 # Antes de certbot, usar solo el bloque HTTP (listen 80).
 # Certbot añadirá SSL y redirección HTTPS automáticamente.
 #
-# IMPORTANTE: /api/ va directo al contenedor API (puerto 3002).
+# IMPORTANTE: /api/ va directo al contenedor API (puerto 8082 en el host).
 # El frontend va al contenedor nginx (puerto 8081).
 
 server {
@@ -13,7 +13,7 @@ server {
     server_name quoter.balamst.com;
 
     location /api/ {
-        proxy_pass http://127.0.0.1:3002/api/;
+        proxy_pass http://127.0.0.1:8082/api/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

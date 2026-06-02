@@ -609,7 +609,10 @@
       line-height: 1.35;
       color: var(--text);
       margin-bottom: 5px;
-      max-width: 34ch;
+    }
+
+    #client-info .client-line-tel {
+      white-space: nowrap;
     }
 
     .meta-line {
@@ -1134,7 +1137,8 @@ Palm Beach, FL 33480</textarea>
       <p id="client-info">
         <span class="client-name">Alvarez & Partners Architects</span><br>
         Elena Alvarez, AIA<br>
-        e.alvarez@alvarezarch.com · +1 (561) 555-0193<br>
+        e.alvarez@alvarezarch.com<br>
+        +1 (561) 555-0193<br>
         Palm Beach, FL
       </p>
     </div>
@@ -1458,7 +1462,7 @@ Palm Beach, FL 33480</textarea>
         '  git pull\n' +
         '  docker compose up -d --build\n\n' +
         'Then verify:\n' +
-        '  curl -s http://127.0.0.1:3002/api/health\n' +
+        '  curl -s http://127.0.0.1:8082/api/health\n' +
         'Should return: {"ok":true}'
       );
       return;
@@ -1601,6 +1605,20 @@ Palm Beach, FL 33480</textarea>
       document.getElementById('e-tagline').value;
   }
 
+  function formatClientInfoHtml(empresa, contacto, email, tel, loc) {
+    const lines = [];
+    if (String(empresa || '').trim()) {
+      lines.push(`<span class="client-name">${escHtml(empresa.trim())}</span>`);
+    }
+    if (String(contacto || '').trim()) lines.push(escHtml(contacto.trim()));
+    if (String(email || '').trim()) lines.push(escHtml(email.trim()));
+    if (String(tel || '').trim()) {
+      lines.push(`<span class="client-line-tel">${escHtml(tel.trim())}</span>`);
+    }
+    if (String(loc || '').trim()) lines.push(escHtml(loc.trim()));
+    return lines.join('<br>');
+  }
+
   function rebuildClientInfo() {
     const empresa  = document.getElementById('c-empresa').value;
     const contacto = document.getElementById('c-contacto').value;
@@ -1613,7 +1631,7 @@ Palm Beach, FL 33480</textarea>
     const payment  = document.getElementById('c-payment').value.trim();
 
     document.getElementById('client-info').innerHTML =
-      `<span class="client-name">${escHtml(empresa)}</span><br>${escHtml(contacto)}<br>${escHtml(email)} · ${escHtml(tel)}<br>${escHtml(loc)}`;
+      formatClientInfoHtml(empresa, contacto, email, tel, loc);
 
     document.getElementById('ship-to-info').innerHTML = formatShipTo(shipTo);
     updateShipToLayout(shipTo);
