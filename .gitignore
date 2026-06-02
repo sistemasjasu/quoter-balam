@@ -12,6 +12,7 @@ desktop.ini
 # Secrets
 .env
 .env.*
+!.env.example
 *.pem
 
 # Logs

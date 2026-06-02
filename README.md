@@ -83,206 +83,106 @@ node -e "const c=require('crypto'); console.log(c.createHash('sha256').update('N
 2. En `index.html`, actualiza `AUTH.passHash` con el valor generado (y `AUTH.email` si cambia el usuario).
 3. Vuelve a desplegar: `docker compose up -d --build`
 
-## Despliegue en Ubuntu Server (quoter.balamst.com)
+## Despliegue en producción (quoter.balamst.com)
 
-Guía para publicar la app en un VPS Ubuntu con dominio y HTTPS.
+Documentación completa: **[deploy/GUIA-PRODUCCION.md](deploy/GUIA-PRODUCCION.md)**  
+(arquitectura, puertos, nginx, SSL, actualizaciones, respaldos y solución de problemas).
 
-### Requisitos previos
+### Puertos en el servidor
 
-- Servidor **Ubuntu 22.04 o 24.04** con acceso SSH
-- Dominio **`quoter.balamst.com`** apuntando al servidor (registro **A** → IP pública del VPS)
-- Puertos **22**, **80** y **443** abiertos en el firewall del proveedor cloud
+| Puerto | Servicio | Notas |
+|--------|----------|--------|
+| **8080** | GLPI (u otra app) | No usar para Quotes |
+| **8081** | Frontend (`quotes-balamst`) | Cotizador HTML |
+| **8082** | API (`quotes-api`) | Guardar/cargar cotizaciones |
+| **443** | nginx host | Dominio público HTTPS |
 
-### 1. DNS
-
-En el panel DNS de `balamst.com`, crea:
-
-| Tipo | Nombre | Valor |
-|------|--------|--------|
-| A | `quoter` | `IP_PUBLICA_DEL_SERVIDOR` |
-
-Comprueba propagación (puede tardar unos minutos):
+### Resumen rápido
 
 ```bash
-dig +short quoter.balamst.com
-```
-
-### 2. Preparar el servidor
-
-Conéctate por SSH y actualiza el sistema:
-
-```bash
-sudo apt update && sudo apt upgrade -y
-```
-
-Instala Docker, Docker Compose, nginx y Certbot:
-
-```bash
-sudo apt install -y ca-certificates curl git nginx certbot python3-certbot-nginx
-curl -fsSL https://get.docker.com | sudo sh
-sudo usermod -aG docker $USER
-```
-
-Cierra sesión y vuelve a entrar por SSH para aplicar el grupo `docker`.
-
-Firewall (UFW):
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 'Nginx Full'
-sudo ufw enable
-sudo ufw status
-```
-
-### 3. Clonar el proyecto
-
-```bash
-sudo mkdir -p /opt/quotes-balamst
-sudo chown $USER:$USER /opt/quotes-balamst
-git clone https://github.com/TU-USUARIO/quotes-balamst.git /opt/quotes-balamst
+# 1. Clonar y configurar
 cd /opt/quotes-balamst
-```
+git clone https://github.com/sistemasjasu/quoter-balam.git .
+cp .env.example .env && nano .env
 
-> Sustituye la URL del repositorio por la tuya cuando esté en GitHub.
-
-### 4. Levantar la aplicación (Docker)
-
-El contenedor escucha en **localhost:8081** (puerto 8081 en el host → 80 en el contenedor; evita conflicto si ya usas 8080, p. ej. GLPI):
-
-```bash
-cd /opt/quotes-balamst
-docker compose up -d --build
+# 2. Docker (3 contenedores)
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 docker compose ps
-```
 
-Verifica que responde en el servidor:
+# 3. Verificar
+curl -s http://127.0.0.1:8082/api/health   # → {"ok":true}
+curl -s http://127.0.0.1:8081/api/health   # → {"ok":true}
 
-```bash
-curl -I http://127.0.0.1:8081/
-# Debe devolver HTTP/1.1 200 OK
+# 4. nginx del host (ver deploy/nginx-host.conf.example)
+sudo cp deploy/nginx-host.conf.example /etc/nginx/sites-available/quoter.balamst.com
+sudo ln -sf /etc/nginx/sites-available/quoter.balamst.com /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
 
-curl -s http://127.0.0.1:8082/api/health
-# Debe devolver: {"ok":true}  ← prueba directa de la API
-
-curl -s http://127.0.0.1:8081/api/health
-# También debe devolver: {"ok":true}
-# Si devuelve HTML, reconstruye sin caché:
-#   docker compose down && docker compose build --no-cache && docker compose up -d
-```
-
-Deben estar **3 contenedores** en ejecución:
-
-```bash
-docker compose ps
-# quotes-db, quotes-api, quotes-balamst → Up
-```
-
-### 5. Configurar nginx en el host (reverse proxy)
-
-Copia la plantilla incluida en el repo:
-
-```bash
-sudo cp /opt/quotes-balamst/deploy/nginx-host.conf.example \
-  /etc/nginx/sites-available/quoter.balamst.com
-
-sudo ln -sf /etc/nginx/sites-available/quoter.balamst.com \
-  /etc/nginx/sites-enabled/quoter.balamst.com
-
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-Comprueba HTTP antes de SSL:
-
-```bash
-curl -s http://quoter.balamst.com/api/health
-# Debe devolver: {"ok":true}
-
-curl -I http://quoter.balamst.com
-# Debe devolver HTTP/1.1 200 OK
-```
-
-> El nginx del host debe incluir `location /api/` → `127.0.0.1:8082` (ver plantilla en `deploy/nginx-host.conf.example`). Si solo tienes `location /` → `8081`, `/api/health` devolverá HTML.
-
-### 6. Certificado SSL (HTTPS)
-
-```bash
+# 5. SSL
 sudo certbot --nginx -d quoter.balamst.com
+# Tras Certbot: confirmar que el bloque HTTPS (443) tiene location /api/ → 8082
+
+# 6. Prueba pública
+curl -s https://quoter.balamst.com/api/health
 ```
 
-Sigue el asistente (email, términos, redirección HTTP → HTTPS recomendada).
-
-Renovación automática (Certbot la instala vía systemd timer). Prueba:
-
-```bash
-sudo certbot renew --dry-run
-```
-
-### 7. Acceso final
-
-Abre en el navegador e inicia sesión:
-
-**https://quoter.balamst.com**
-
-| Campo | Valor |
-|-------|--------|
-| Email | `aandrade@balamst.com` |
-| Contraseña | `Balam1234` |
-
-### 8. Actualizar la app
-
-Cuando subas cambios al repositorio:
+### Actualizar tras un `git push`
 
 ```bash
 cd /opt/quotes-balamst
 git pull
-docker compose up -d --build
-docker compose ps
-curl -s http://127.0.0.1:8082/api/health
-curl -s http://127.0.0.1:8081/api/health
+docker compose down
+docker compose build --no-cache
+docker compose up -d
+curl -s https://quoter.balamst.com/api/health
 ```
 
-### 9. Comandos útiles
+### nginx del host (imprescindible)
 
-```bash
-# Logs del contenedor
-docker compose logs -f
+El dominio debe tener **dos** rutas. Sin `location /api/`, el login falla (la API devuelve HTML):
 
-# Reiniciar app
-docker compose restart
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:8082/api/;
+    # ... headers proxy ...
+}
 
-# Estado de nginx
-sudo systemctl status nginx
-
-# Ver certificados
-sudo certbot certificates
+location / {
+    proxy_pass http://127.0.0.1:8081;
+    # ... headers proxy ...
+}
 ```
 
-### Diagrama de arquitectura
+Plantilla lista para copiar: `deploy/nginx-host.conf.example`.
+
+### Diagrama
 
 ```
-Internet
-   │
-   ▼
-quoter.balamst.com :443 (nginx host + Let's Encrypt)
-   │
-   ▼
-127.0.0.1:8081 (frontend) + 127.0.0.1:8082 (API)
+Internet → quoter.balamst.com:443 (nginx host)
+              ├─ /api/*  → 127.0.0.1:8082  (quotes-api + PostgreSQL)
+              └─ /*      → 127.0.0.1:8081  (quotes-balamst, frontend)
 ```
 
 ## Estructura del proyecto
 
 ```
 quotes-balamst/
-├── index.html          # App completa (HTML + CSS + JS)
-├── logo.png            # Logo de la empresa
+├── index.html                   # App (HTML + CSS + JS)
+├── logo.png
+├── server/                      # API Node.js + PostgreSQL
+│   ├── index.js
+│   ├── db.js
+│   └── Dockerfile
 ├── nginx/
-│   └── default.conf    # Config nginx (solo archivos estáticos)
+│   └── default.conf             # nginx interno del contenedor quotes
 ├── deploy/
-│   └── nginx-host.conf.example  # Reverse proxy para Ubuntu
-├── Dockerfile
-├── docker-compose.yml
-├── .dockerignore
+│   ├── GUIA-PRODUCCION.md         # Guía completa de despliegue
+│   └── nginx-host.conf.example  # Reverse proxy del servidor Ubuntu
+├── docker-compose.yml           # db + api + quotes
+├── .env.example                 # Variables de entorno
+├── Dockerfile                   # Imagen frontend (nginx)
 └── README.md
 ```
 
@@ -296,11 +196,11 @@ quotes-balamst/
 
 ## Notas técnicas
 
-- Sin backend ni base de datos: todos los datos viven en memoria del navegador.
-- El login es una pantalla en la propia app; la sesión usa `sessionStorage` (dura mientras la pestaña esté abierta).
-- La contraseña se valida en el cliente (hash SHA-256). Es adecuada para uso interno; no sustituye un backend con autenticación real.
-- El PDF se genera con la función de impresión del navegador (Ctrl+P / Cmd+P).
-- Fuentes Google Fonts (Cormorant Garamond + Inter) requieren conexión a internet la primera vez.
+- **Persistencia:** las cotizaciones se guardan en PostgreSQL vía API REST (`/api/quotes`).
+- **Login:** validación en cliente (SHA-256) y en API (JWT). Requiere que la API esté activa (`/api/auth/login`).
+- **Sesión:** token JWT en `sessionStorage` mientras la pestaña esté abierta.
+- **PDF:** impresión del navegador (Ctrl+P / Cmd+P).
+- **Fuentes:** Google Fonts (Cormorant Garamond + Inter) en la primera carga.
 
 ## Licencia
 
