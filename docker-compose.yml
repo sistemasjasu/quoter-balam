@@ -33,7 +33,7 @@ services:
     build: .
     container_name: quotes-balamst
     ports:
-      - "8080:80"
+      - "${QUOTES_PORT:-8081}:80"
     depends_on:
       - api
     restart: unless-stopped

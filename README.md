@@ -37,11 +37,11 @@ Servicios:
 
 | Servicio | Descripción |
 |----------|-------------|
-| `quotes` | Frontend nginx en `:8080` |
+| `quotes` | Frontend nginx en `:8081` (host) |
 | `api` | API REST Node.js (interno) |
 | `db` | PostgreSQL 16 (volumen `pgdata`) |
 
-Visita `http://localhost:8080` e inicia sesión.
+Visita `http://localhost:8081` e inicia sesión.
 
 **Guardar / cargar cotizaciones**
 
@@ -147,7 +147,7 @@ cd /opt/quotes-balamst
 
 ### 4. Levantar la aplicación (Docker)
 
-El contenedor escucha en **localhost:8080** (no expone el puerto al exterior directamente):
+El contenedor escucha en **localhost:8081** (puerto 8081 en el host → 80 en el contenedor; evita conflicto si ya usas 8080, p. ej. GLPI):
 
 ```bash
 cd /opt/quotes-balamst
@@ -158,10 +158,10 @@ docker compose ps
 Verifica que responde en el servidor:
 
 ```bash
-curl -I http://127.0.0.1:8080/
+curl -I http://127.0.0.1:8081/
 # Debe devolver HTTP/1.1 200 OK
 
-curl -s http://127.0.0.1:8080/api/health
+curl -s http://127.0.0.1:8081/api/health
 # Debe devolver: {"ok":true}
 # Si devuelve HTML, la API no está desplegada: revisa docker compose ps (db, api, quotes)
 ```
@@ -229,7 +229,7 @@ cd /opt/quotes-balamst
 git pull
 docker compose up -d --build
 docker compose ps
-curl -s http://127.0.0.1:8080/api/health
+curl -s http://127.0.0.1:8081/api/health
 ```
 
 ### 9. Comandos útiles
@@ -257,7 +257,7 @@ Internet
 quoter.balamst.com :443 (nginx host + Let's Encrypt)
    │
    ▼
-127.0.0.1:8080 (Docker → nginx estático + login en index.html)
+127.0.0.1:8081 (Docker: quotes + api + db)
 ```
 
 ## Estructura del proyecto
